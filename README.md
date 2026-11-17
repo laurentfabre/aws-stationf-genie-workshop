@@ -7,10 +7,10 @@ Installez votre atelier dans un **Databricks Trial sur AWS**, puis travaillez en
 ## Démarrer le jour J
 
 1. Ouvrez votre [Trial Databricks](https://www.databricks.com/try-databricks). Le parcours **Express signup** crée un workspace serverless sans fournir d’identifiants AWS. Préparez le compte avant l’atelier ; l’installation reste rejouable le jour J. [Guide détaillé](docs/TRIAL_SETUP.md).
-2. [Téléchargez le notebook autonome](https://github.com/laurent-fabre_data/aws-stationf-genie-workshop/releases/latest/download/00_START_HERE.ipynb). Si le navigateur affiche du JSON, enregistrez le fichier avec l’extension `.ipynb`. [Source du notebook](notebooks/00_START_HERE.ipynb).
+2. [Téléchargez le notebook autonome](https://github.com/laurentfabre/aws-stationf-genie-workshop/releases/latest/download/00_START_HERE.ipynb). Si le navigateur affiche du JSON, enregistrez le fichier avec l’extension `.ipynb`. [Source du notebook](notebooks/00_START_HERE.ipynb).
 3. Dans **Workspace → Import**, importez ce fichier. Choisissez **Serverless**, puis exécutez jusqu’à « Préparer mon installation ».
 4. Renseignez les widgets : **catalogue existant**, **schéma** `stationf_20261124_votre_equipe`, **SQL warehouse ID** et **action** `installer`. Exécutez les cellules suivantes dans l’ordre.
-5. Ouvrez le lien **Genie Agent** produit par le notebook. Téléchargez et extrayez le [kit participant](https://github.com/laurent-fabre_data/aws-stationf-genie-workshop/releases/latest/download/stationf-genie-participants-2026-11-24.zip), puis ouvrez `index.html`. Reportez les valeurs du reçu dans « Liens de session et environnement ».
+5. Ouvrez le lien **Genie Agent** produit par le notebook. Téléchargez et extrayez le [kit participant](https://github.com/laurentfabre/aws-stationf-genie-workshop/releases/latest/download/stationf-genie-participants-2026-11-24.zip), puis ouvrez `index.html`. Reportez les valeurs du reçu dans « Liens de session et environnement ».
 
 Le notebook crée trois tables Delta (240 comptes, 48 lignes campagne/semaine, 360 opportunités) et un Genie Agent dédié. Il réutilise le warehouse choisi. Une relance conserve les tables compatibles et les instructions Genie modifiées pendant l’exercice. Une collision arrête l’opération ; aucune table existante n’est écrasée.
 
