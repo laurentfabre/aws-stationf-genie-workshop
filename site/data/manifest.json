@@ -1,0 +1,11 @@
+{
+  "version": "stationf-synthetic-v1",
+  "seed": 24112026,
+  "as_of": "2026-11-17",
+  "rows": {
+    "account_snapshot": 240,
+    "campaign_weekly": 48,
+    "opportunities": 360
+  },
+  "provenance": "Données entièrement synthétiques ; aucune donnée client ou Logfood."
+}

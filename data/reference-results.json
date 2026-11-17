@@ -1,0 +1,230 @@
+{
+  "dataset": "stationf-synthetic-v1",
+  "environment": "Local SQLite; Databricks execution NOT RUN",
+  "generated_at": "2026-11-17T09:59:43.535668+00:00",
+  "results": {
+    "activation": [
+      {
+        "engagement_tier": "Engagé",
+        "accounts": 45,
+        "mrr_eur": 109400,
+        "eligible_for_review": 37
+      },
+      {
+        "engagement_tier": "Preuve insuffisante",
+        "accounts": 12,
+        "mrr_eur": 40900,
+        "eligible_for_review": 0
+      },
+      {
+        "engagement_tier": "Stable",
+        "accounts": 165,
+        "mrr_eur": 498800,
+        "eligible_for_review": 142
+      },
+      {
+        "engagement_tier": "À revoir",
+        "accounts": 18,
+        "mrr_eur": 56500,
+        "eligible_for_review": 16
+      }
+    ],
+    "empty": [
+      {
+        "opportunities_2028": 0
+      }
+    ],
+    "marketing": [
+      {
+        "channel": "Partner",
+        "weeks_total": 8,
+        "weeks_complete": 8,
+        "spend_all_eur": 12225,
+        "spend_comparable_eur": 12225,
+        "spend_excluded_eur": 0,
+        "new_customers": 33,
+        "revenue_comparable_eur": 138550,
+        "attributed_roas": 11.3333,
+        "acquisition_cost_eur": 370.45
+      },
+      {
+        "channel": "Retargeting",
+        "weeks_total": 8,
+        "weeks_complete": 8,
+        "spend_all_eur": 9780,
+        "spend_comparable_eur": 9780,
+        "spend_excluded_eur": 0,
+        "new_customers": 41,
+        "revenue_comparable_eur": 105950,
+        "attributed_roas": 10.8333,
+        "acquisition_cost_eur": 238.54
+      },
+      {
+        "channel": "Webinar",
+        "weeks_total": 8,
+        "weeks_complete": 8,
+        "spend_all_eur": 20375,
+        "spend_comparable_eur": 20375,
+        "spend_excluded_eur": 0,
+        "new_customers": 49,
+        "revenue_comparable_eur": 179300,
+        "attributed_roas": 8.8,
+        "acquisition_cost_eur": 415.82
+      },
+      {
+        "channel": "Paid Search",
+        "weeks_total": 8,
+        "weeks_complete": 8,
+        "spend_all_eur": 40750,
+        "spend_comparable_eur": 40750,
+        "spend_excluded_eur": 0,
+        "new_customers": 66,
+        "revenue_comparable_eur": 228200,
+        "attributed_roas": 5.6,
+        "acquisition_cost_eur": 617.42
+      },
+      {
+        "channel": "Paid Social",
+        "weeks_total": 8,
+        "weeks_complete": 6,
+        "spend_all_eur": 32600,
+        "spend_comparable_eur": 24600,
+        "spend_excluded_eur": 8000,
+        "new_customers": 25,
+        "revenue_comparable_eur": 73800,
+        "attributed_roas": 3.0,
+        "acquisition_cost_eur": 984.0
+      },
+      {
+        "channel": "Expérimentation",
+        "weeks_total": 8,
+        "weeks_complete": 8,
+        "spend_all_eur": 4075,
+        "spend_comparable_eur": 4075,
+        "spend_excluded_eur": 0,
+        "new_customers": 0,
+        "revenue_comparable_eur": 0,
+        "attributed_roas": 0.0,
+        "acquisition_cost_eur": null
+      }
+    ],
+    "quality": [
+      {
+        "accounts": 240,
+        "distinct_accounts": 240,
+        "campaign_weeks": 48,
+        "opportunities": 360,
+        "distinct_opportunities": 360,
+        "incomplete_telemetry": 12,
+        "incomplete_attribution": 2,
+        "unverified_amounts": 11,
+        "orphan_opportunities": 0
+      }
+    ],
+    "retention": [
+      {
+        "account_id": "A0104",
+        "company": "Entreprise démo 104",
+        "country": "DE",
+        "segment": "Scale-up",
+        "mrr_eur": 8000,
+        "renewal_date": "2026-12-16",
+        "email_opt_in": 1,
+        "activity_drop_pct": 65.06
+      },
+      {
+        "account_id": "A0169",
+        "company": "Entreprise démo 169",
+        "country": "DE",
+        "segment": "Entreprise",
+        "mrr_eur": 8000,
+        "renewal_date": "2026-12-06",
+        "email_opt_in": 1,
+        "activity_drop_pct": 64.81
+      },
+      {
+        "account_id": "A0234",
+        "company": "Entreprise démo 234",
+        "country": "FR",
+        "segment": "Scale-up",
+        "mrr_eur": 8000,
+        "renewal_date": "2026-11-26",
+        "email_opt_in": 1,
+        "activity_drop_pct": 64.71
+      },
+      {
+        "account_id": "A0013",
+        "company": "Entreprise démo 013",
+        "country": "FR",
+        "segment": "PME",
+        "mrr_eur": 3500,
+        "renewal_date": "2026-11-30",
+        "email_opt_in": 1,
+        "activity_drop_pct": 64.81
+      },
+      {
+        "account_id": "A0078",
+        "company": "Entreprise démo 078",
+        "country": "DE",
+        "segment": "Entreprise",
+        "mrr_eur": 3500,
+        "renewal_date": "2026-11-20",
+        "email_opt_in": 1,
+        "activity_drop_pct": 65.38
+      },
+      {
+        "account_id": "A0026",
+        "company": "Entreprise démo 026",
+        "country": "FR",
+        "segment": "Scale-up",
+        "mrr_eur": 900,
+        "renewal_date": "2026-12-13",
+        "email_opt_in": 1,
+        "activity_drop_pct": 64.85
+      },
+      {
+        "account_id": "A0091",
+        "company": "Entreprise démo 091",
+        "country": "DE",
+        "segment": "PME",
+        "mrr_eur": 900,
+        "renewal_date": "2026-12-03",
+        "email_opt_in": 0,
+        "activity_drop_pct": 64.71
+      },
+      {
+        "account_id": "A0156",
+        "company": "Entreprise démo 156",
+        "country": "FR",
+        "segment": "Scale-up",
+        "mrr_eur": 900,
+        "renewal_date": "2026-11-23",
+        "email_opt_in": 1,
+        "activity_drop_pct": 65.33
+      }
+    ],
+    "sales": [
+      {
+        "country": "FR",
+        "opportunities": 64,
+        "open_pipeline_eur": 1062000,
+        "weighted_pipeline_eur": 414600.0,
+        "stale_pipeline_eur": 54000
+      },
+      {
+        "country": "DE",
+        "opportunities": 19,
+        "open_pipeline_eur": 438000,
+        "weighted_pipeline_eur": 180300.0,
+        "stale_pipeline_eur": 6000
+      },
+      {
+        "country": "GB",
+        "opportunities": 14,
+        "open_pipeline_eur": 174000,
+        "weighted_pipeline_eur": 78900.0,
+        "stale_pipeline_eur": 0
+      }
+    ]
+  }
+}

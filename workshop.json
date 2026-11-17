@@ -1,0 +1,306 @@
+{
+  "version": "1.0",
+  "dataset": "stationf-synthetic-v1",
+  "title": "De la question à la décision",
+  "event": "AWS × Databricks · STATION F",
+  "date": "24 novembre 2026",
+  "language": "fr",
+  "description": "Un atelier Genie pour les équipes Sales, Marketing et Account Management. Choisissez une décision, interrogez les données, vérifiez votre réponse et préparez une application réutilisable.",
+  "venue": "AWS Office · 5 Parvis Alan Turing · Paris",
+  "duration": 120,
+  "agenda": [
+    [
+      "09:45",
+      "10 min",
+      "Se connecter"
+    ],
+    [
+      "09:55",
+      "25 min",
+      "Investiguer avec Genie"
+    ],
+    [
+      "10:20",
+      "10 min",
+      "Fixer le contrat"
+    ],
+    [
+      "10:30",
+      "5 min",
+      "Pause"
+    ],
+    [
+      "10:35",
+      "30 min",
+      "Construire / approfondir"
+    ],
+    [
+      "11:05",
+      "25 min",
+      "Vérifier et exporter"
+    ],
+    [
+      "11:30",
+      "15 min",
+      "Présenter et décider"
+    ]
+  ],
+  "steps": [
+    "Démarrer",
+    "Explorer",
+    "Fixer le contrat",
+    "Construire",
+    "Vérifier",
+    "Décider"
+  ],
+  "bindings": {
+    "workspace_url": "",
+    "catalog": "",
+    "schema": "",
+    "warehouse_id": "",
+    "genie_url": "",
+    "app_space_url": "",
+    "identity_mode": "user-authorization"
+  },
+  "tracks": [
+    {
+      "id": "marketing",
+      "tag": "MARKETING",
+      "title": "Où investir le prochain euro ?",
+      "subtitle": "Performance des campagnes et qualité de l’attribution",
+      "owner": "Responsable Growth / Marketing",
+      "decision": "Choisir deux canaux à examiner pour une réallocation de budget, avec les limites d’attribution.",
+      "tables": [
+        "campaign_weekly"
+      ],
+      "query": "marketing",
+      "query_id": "M1",
+      "contract": "Une ligne par (campaign_id, week_start), 6 campagnes × 8 semaines, du 21 septembre au 9 novembre 2026 inclus. Les semaines sont des cohortes d’acquisition ; le revenu net attribué et les nouveaux clients sont arrêtés au 17 novembre. Attribution exclusive au dernier contact, une seule campagne créditée ; ce choix est pédagogique. Le ROAS attribué est SUM(revenu net) / SUM(dépenses), sur les seules semaines complètes. Le coût d’acquisition est SUM(dépenses) / SUM(nouveaux clients) sur ce même périmètre ; NULL si zéro client. Ce coût ne comprend pas l’ensemble des coûts commerciaux et n’est donc pas un CAC complet. Ne pas moyenner les ratios. Exposer les dépenses et semaines exclues. Aucun effet causal ni ROI de marge n’est mesuré.",
+      "questions": [
+        "Sur les huit semaines du 21 septembre au 9 novembre 2026, quels canaux affichent le meilleur ROAS attribué et coût d’acquisition ? Donne la formule, le périmètre et le SQL.",
+        "Recalcule les ratios sur les seules semaines dont attribution_complete=1. Affiche aussi dépenses totales, dépenses exclues et nombre de semaines complètes.",
+        "Un canal a beaucoup de leads, mais deux semaines sans attribution. Peut-on conclure qu’il est mauvais ? Que faudrait-il vérifier avant de modifier le budget ?"
+      ],
+      "checks": [
+        [
+          "Normal",
+          "Comparer tous les canaux à M1, montants ±0,01 EUR et ROAS ±0,0001."
+        ],
+        [
+          "Incomplet",
+          "Paid Social : 6 semaines complètes sur 8 ; dépenses exclues visibles."
+        ],
+        [
+          "Contre-exemple",
+          "Expérimentation : coût d’acquisition NULL, aucun client ; ne pas confondre volume de leads et efficacité."
+        ],
+        [
+          "Vide",
+          "Période 2028 : message explicite, aucun résultat inventé."
+        ],
+        [
+          "Accès",
+          "Le compte Trial lit les sources. Le refus de lecture et d’écriture doit être testé avec une seconde identité limitée préparée ; sinon NOT RUN. Le propriétaire des tables ne valide pas une restriction en lecture seule."
+        ]
+      ],
+      "fallback": "Avec Genie uniquement, produire une courte recommandation avec M1, le SQL de Genie et une hypothèse à tester par expérimentation. L’application reste non construite.",
+      "builder_initial": "Nous participons au workshop AWS × Databricks à STATION F le 24 novembre 2026. NovaFlow est une entreprise SaaS B2B fictive. Toutes les données sont synthétiques, version stationf-synthetic-v1, arrêtées au 17 novembre 2026 ; elles ne décrivent aucun client réel.\nConstruis dans l’App Space préparé dans notre Trial une petite application en français, en lecture seule. Inspecte d’abord les schémas et les permissions. Si une source manque, si la requête échoue ou si l’identité n’a pas accès, affiche le problème ; n’invente ni colonne ni résultat et ne remplace pas la requête par un fichier local.\nUtilise exclusivement les objets du namespace {{catalog}}.{{schema}}. Utilise le catalogue et le schéma confirmés dans le reçu du notebook d’installation. Ne lis aucune autre donnée. Le mode d’accès attendu est l’autorisation utilisateur, avec l’identité du participant et les scopes confirmés par l’administrateur. Vérifie le mode réellement actif et affiche-le ; si seules des Shared data sont disponibles, fais confirmer ce changement avant de poursuivre. Un sélecteur visuel de rôle n’accorde aucun droit.\nAffiche les filtres, la date de référence, les unités EUR, la définition des KPI et les requêtes. Prévois les états chargement, absence de données, erreur et accès refusé. Lie les paramètres sans concaténation SQL. Aucun envoi de campagne, mise à jour CRM ou promesse d’enregistrement durable. Toute variation locale doit porter « Simulation — non enregistrée ».\n\nContrat métier : Une ligne par (campaign_id, week_start), 6 campagnes × 8 semaines, du 21 septembre au 9 novembre 2026 inclus. Les semaines sont des cohortes d’acquisition ; le revenu net attribué et les nouveaux clients sont arrêtés au 17 novembre. Attribution exclusive au dernier contact, une seule campagne créditée ; ce choix est pédagogique. Le ROAS attribué est SUM(revenu net) / SUM(dépenses), sur les seules semaines complètes. Le coût d’acquisition est SUM(dépenses) / SUM(nouveaux clients) sur ce même périmètre ; NULL si zéro client. Ce coût ne comprend pas l’ensemble des coûts commerciaux et n’est donc pas un CAC complet. Ne pas moyenner les ratios. Exposer les dépenses et semaines exclues. Aucun effet causal ni ROI de marge n’est mesuré.\n\nSource : {{catalog}}.{{schema}}.campaign_weekly. Colonnes : campaign_id, channel, week_start, spend_eur, leads, qualified_leads, new_customers, attributed_net_revenue_eur, attribution_complete, as_of_date.\nCrée une page « Revue acquisition » avec un tableau trié par ROAS attribué, un graphique de dépenses par canal, les semaines manquantes et une explication des dénominateurs. Filtre par canal et période, initialement 21/09–09/11/2026. Utilise le contrat ci-dessus et compare à M1, fourni dans sql/marketing.sql. Montre pourquoi un canal sans nouveau client a un coût d’acquisition non calculable. L’action finale consiste à exporter une recommandation pour revue humaine, sans publier une campagne. Donne un aperçu fonctionnel et la liste des vérifications encore nécessaires.\nLe propriétaire du Trial peut écrire dans les tables. Ce compte ne démontre pas une restriction en lecture seule. Sans seconde identité limitée préparée, consigne les tests de refus NOT RUN.",
+      "builder_iteration": "Conserve l’application et le contrat M1. Utilise les observations de notre cahier ci-dessous, avec le même dataset, identité et filtre. Corrige les écarts observés sans remplacer les chiffres calculés par les résultats de référence. Vérifie Paid Social : les deux semaines incomplètes et leurs dépenses doivent rester visibles ; compare ROAS calculé sur semaines complètes et agrégation naïve. Pour Expérimentation, zéro nouveau client doit donner un coût d’acquisition « non calculable », jamais zéro. Un filtre en 2028 doit afficher « aucune donnée ». Affiche le revenu net attribué et précise que le ROAS n’établit pas l’incrémentalité. Vérifie le refus d’accès avec l’identité de test fournie. Garde une liste des changements et des résultats PASS/FAIL/BLOCKED. Sans seconde identité de test disponible, indique NOT RUN pour le refus d’accès ; le compte administrateur Trial ne valide pas ce contrôle."
+    },
+    {
+      "id": "activation",
+      "tag": "SALES & MARKETING",
+      "title": "Quelle audience pour quelle action ?",
+      "subtitle": "Segmentation, personnalisation et priorisation commerciale",
+      "owner": "Responsable CRM / Sales / Growth",
+      "decision": "Séparer les audiences à développer, à accompagner et à examiner, puis choisir une action humaine adaptée à chaque groupe.",
+      "tables": [
+        "account_snapshot"
+      ],
+      "query": "activation",
+      "query_id": "A1",
+      "contract": "Une ligne par compte au 17 novembre 2026. Les utilisateurs actifs sont mesurés sur deux fenêtres de 28 jours. Calculer le ratio courant/précédent uniquement si la télémétrie est complète et la base précédente positive. Engagé : ratio ≥1,05 ; Stable : 0,60 ≤ ratio <1,05 ; À revoir : ratio <0,60 ; sinon Preuve insuffisante. Les groupes sont mutuellement exclusifs et couvrent 240 comptes. eligible_for_review compte les comptes à télémétrie complète, avec email_opt_in=1 et un groupe calculable ; il indique seulement l’éligibilité à une revue humaine. Montrer séparément les comptes non opt-in. La somme MRR est EUR/mois, pas un potentiel incrémental. Ces règles sont pédagogiques, sans modèle ML, causalité, envoi ni recommandation automatisée de traitement.",
+      "questions": [
+        "Répartis les 240 comptes en groupes Engagé, Stable, À revoir et Preuve insuffisante à partir de l’évolution des utilisateurs actifs. Propose d’abord des seuils explicites puis applique le contrat A1. Donne les effectifs, MRR et SQL.",
+        "Pour chaque groupe, combien de comptes ont un opt-in et une télémétrie complète ? Vérifie que les groupes couvrent exactement les 240 comptes, sans doublon ni compte oublié.",
+        "Peut-on traiter automatiquement un compte sans télémétrie comme désengagé ? Un fort engagement suffit-il à recommander une offre commerciale ? Distingue signal, hypothèse et action à valider."
+      ],
+      "builder_iteration": "Conserve l’application et le contrat A1. Corrige les écarts réels de notre cahier. Compare les effectifs de chaque groupe à A1 : leur total doit être 240, et la somme des MRR doit égaler celle des comptes du snapshot. Vérifie les bornes 0,60 et 1,05, les 12 comptes à télémétrie incomplète, et les comptes sans opt-in. Un compte sans preuve doit rester dans Preuve insuffisante, pas À revoir. Un filtre pays ZZ doit afficher un état vide. Teste le refus de lecture avec l’identité de test. Une simulation de seuils ne doit modifier ni les sources ni envoyer de campagne. Expose les seuils actifs, les changements et le relevé des vérifications, sans substituer des constantes aux requêtes. Sans seconde identité de test disponible, indique NOT RUN pour le refus d’accès ; le compte administrateur Trial ne valide pas ce contrôle.",
+      "checks": [
+        [
+          "Normal",
+          "Comparer les quatre groupes à A1 ; total exact de 240 comptes, somme MRR exacte."
+        ],
+        [
+          "Incomplet",
+          "Les 12 comptes sans télémétrie complète sont dans Preuve insuffisante et non éligibles à la revue."
+        ],
+        [
+          "Contre-exemple",
+          "Un compte engagé sans opt-in est visible dans les statistiques, mais exclu de eligible_for_review."
+        ],
+        [
+          "Vide",
+          "Pays ZZ : aucun compte et message explicite."
+        ],
+        [
+          "Accès",
+          "Le compte Trial lit les sources. Le refus de lecture et d’écriture doit être testé avec une seconde identité limitée préparée ; sinon NOT RUN. Le propriétaire des tables ne valide pas une restriction en lecture seule."
+        ]
+      ],
+      "fallback": "Avec Genie uniquement, sauvegarder le tableau de segmentation, une proposition d’action par groupe et la preuve manquante. La construction d’application reste BLOCKED si Builder est indisponible.",
+      "builder_initial": "Nous participons au workshop AWS × Databricks à STATION F le 24 novembre 2026. NovaFlow est une entreprise SaaS B2B fictive. Toutes les données sont synthétiques, version stationf-synthetic-v1, arrêtées au 17 novembre 2026 ; elles ne décrivent aucun client réel.\nConstruis dans l’App Space préparé dans notre Trial une petite application en français, en lecture seule. Inspecte d’abord les schémas et les permissions. Si une source manque, si la requête échoue ou si l’identité n’a pas accès, affiche le problème ; n’invente ni colonne ni résultat et ne remplace pas la requête par un fichier local.\nUtilise exclusivement les objets du namespace {{catalog}}.{{schema}}. Utilise le catalogue et le schéma confirmés dans le reçu du notebook d’installation. Ne lis aucune autre donnée. Le mode d’accès attendu est l’autorisation utilisateur, avec l’identité du participant et les scopes confirmés par l’administrateur. Vérifie le mode réellement actif et affiche-le ; si seules des Shared data sont disponibles, fais confirmer ce changement avant de poursuivre. Un sélecteur visuel de rôle n’accorde aucun droit.\nAffiche les filtres, la date de référence, les unités EUR, la définition des KPI et les requêtes. Prévois les états chargement, absence de données, erreur et accès refusé. Lie les paramètres sans concaténation SQL. Aucun envoi de campagne, mise à jour CRM ou promesse d’enregistrement durable. Toute variation locale doit porter « Simulation — non enregistrée ».\n\nContrat métier : Une ligne par compte au 17 novembre 2026. Les utilisateurs actifs sont mesurés sur deux fenêtres de 28 jours. Calculer le ratio courant/précédent uniquement si la télémétrie est complète et la base précédente positive. Engagé : ratio ≥1,05 ; Stable : 0,60 ≤ ratio <1,05 ; À revoir : ratio <0,60 ; sinon Preuve insuffisante. Les groupes sont mutuellement exclusifs et couvrent 240 comptes. eligible_for_review compte les comptes à télémétrie complète, avec email_opt_in=1 et un groupe calculable ; il indique seulement l’éligibilité à une revue humaine. Montrer séparément les comptes non opt-in. La somme MRR est EUR/mois, pas un potentiel incrémental. Ces règles sont pédagogiques, sans modèle ML, causalité, envoi ni recommandation automatisée de traitement.\n\nSource : {{catalog}}.{{schema}}.account_snapshot ; colonnes account_id, company, country, segment, mrr_eur, users_previous_28d, users_current_28d, telemetry_complete, email_opt_in, as_of_date.\nCrée une page « Revue des audiences » : quatre cartes de groupes avec effectif et MRR, un tableau détaillé filtrable par groupe/pays/segment, la définition du ratio et l’opt-in visible. Distingue les comptes éligibles à une revue et les comptes sans preuve ou opt-in. Le détail doit expliquer pourquoi un compte appartient au groupe. Applique A1 dans sql/activation.sql et conserve les groupes exclusifs. Propose un espace de recommandation à copier dans notre cahier ; aucune campagne, activation CRM ou promesse de sauvegarde serveur. Un aperçu fonctionnel et les contrôles encore nécessaires constituent la première livraison.\nLe propriétaire du Trial peut écrire dans les tables. Ce compte ne démontre pas une restriction en lecture seule. Sans seconde identité limitée préparée, consigne les tests de refus NOT RUN."
+    },
+    {
+      "id": "retention",
+      "tag": "ACCOUNT MANAGEMENT",
+      "title": "Quels clients revoir cette semaine ?",
+      "subtitle": "Customer 360 et signaux de rétention",
+      "owner": "Responsable Customer Success / Account Manager",
+      "decision": "Établir une liste de comptes à examiner avant renouvellement, puis décider quelle preuve manque avant toute prise de contact.",
+      "tables": [
+        "account_snapshot"
+      ],
+      "query": "retention",
+      "query_id": "R1",
+      "contract": "Une ligne par account_id au 17 novembre 2026, 240 comptes fictifs. MRR en EUR/mois, pas revenu perdu. Deux fenêtres successives de 28 jours, 23 septembre–20 octobre et 21 octobre–17 novembre inclus. Revue prioritaire : télémétrie complète, base précédente > 0, baisse strictement supérieure à 40 %, renouvellement du 17 novembre au 17 décembre inclus. Le seuil est une règle pédagogique, pas un modèle de churn. Télémétrie incomplète = preuve insuffisante, même si users_current_28d=0. L’opt-in doit rester visible ; il ne suffit pas à établir une base légale complète pour un contact réel. Aucun envoi automatique.",
+      "questions": [
+        "Quels comptes renouvellent entre le 17 novembre et le 17 décembre 2026 avec une baisse d’utilisateurs actifs de plus de 40 % ? Trie par MRR et montre les comptes et le SQL.",
+        "Exclus la télémétrie incomplète et les bases précédentes nulles ou égales à zéro. Combien de comptes et quel MRR total restent à examiner ?",
+        "Un compte a zéro utilisateur actif mais une télémétrie incomplète. Peut-on parler de churn ? Distingue fait observé, hypothèse et preuve manquante."
+      ],
+      "checks": [
+        [
+          "Normal",
+          "Comparer la liste des account_id et le total MRR à R1 ; exactitude des identifiants, montants ±0,01 EUR."
+        ],
+        [
+          "Incomplet",
+          "A0019 a une télémétrie incomplète : ne pas conclure au churn."
+        ],
+        [
+          "Contre-exemple",
+          "Une baisse d’activité hors fenêtre de renouvellement ne passe pas la règle R1 ; une règle n’est pas une probabilité."
+        ],
+        [
+          "Vide",
+          "Renouvellements en 2028 : liste vide explicite."
+        ],
+        [
+          "Accès",
+          "Le compte Trial lit les sources. Le refus de lecture et d’écriture doit être testé avec une seconde identité limitée préparée ; sinon NOT RUN. Le propriétaire des tables ne valide pas une restriction en lecture seule."
+        ]
+      ],
+      "fallback": "Avec Genie uniquement, sauvegarder la liste R1 et une fiche de revue par compte. Qualifier la construction d’application BLOCKED si Builder n’est pas disponible.",
+      "builder_initial": "Nous participons au workshop AWS × Databricks à STATION F le 24 novembre 2026. NovaFlow est une entreprise SaaS B2B fictive. Toutes les données sont synthétiques, version stationf-synthetic-v1, arrêtées au 17 novembre 2026 ; elles ne décrivent aucun client réel.\nConstruis dans l’App Space préparé dans notre Trial une petite application en français, en lecture seule. Inspecte d’abord les schémas et les permissions. Si une source manque, si la requête échoue ou si l’identité n’a pas accès, affiche le problème ; n’invente ni colonne ni résultat et ne remplace pas la requête par un fichier local.\nUtilise exclusivement les objets du namespace {{catalog}}.{{schema}}. Utilise le catalogue et le schéma confirmés dans le reçu du notebook d’installation. Ne lis aucune autre donnée. Le mode d’accès attendu est l’autorisation utilisateur, avec l’identité du participant et les scopes confirmés par l’administrateur. Vérifie le mode réellement actif et affiche-le ; si seules des Shared data sont disponibles, fais confirmer ce changement avant de poursuivre. Un sélecteur visuel de rôle n’accorde aucun droit.\nAffiche les filtres, la date de référence, les unités EUR, la définition des KPI et les requêtes. Prévois les états chargement, absence de données, erreur et accès refusé. Lie les paramètres sans concaténation SQL. Aucun envoi de campagne, mise à jour CRM ou promesse d’enregistrement durable. Toute variation locale doit porter « Simulation — non enregistrée ».\n\nContrat métier : Une ligne par account_id au 17 novembre 2026, 240 comptes fictifs. MRR en EUR/mois, pas revenu perdu. Deux fenêtres successives de 28 jours, 23 septembre–20 octobre et 21 octobre–17 novembre inclus. Revue prioritaire : télémétrie complète, base précédente > 0, baisse strictement supérieure à 40 %, renouvellement du 17 novembre au 17 décembre inclus. Le seuil est une règle pédagogique, pas un modèle de churn. Télémétrie incomplète = preuve insuffisante, même si users_current_28d=0. L’opt-in doit rester visible ; il ne suffit pas à établir une base légale complète pour un contact réel. Aucun envoi automatique.\n\nSource : {{catalog}}.{{schema}}.account_snapshot. Colonnes : account_id, company, segment, country, mrr_eur, users_previous_28d, users_current_28d, telemetry_complete, renewal_date, email_opt_in, as_of_date.\nCrée « Revue renouvellements » : liste de comptes triée par MRR, filtres pays/segment, détail expliquant la règle, indicateur de qualité et opt-in. Laisse la fenêtre initiale 17/11–17/12/2026 et le seuil >40 %. Compare au SQL R1 dans sql/retention.sql. Affiche le nombre de comptes et leur MRR sans l’appeler prévision de perte. La sélection finale est une liste à discuter avec un responsable humain. Pas de score ML, contact automatisé ou bouton qui prétend sauvegarder une action.\nLe propriétaire du Trial peut écrire dans les tables. Ce compte ne démontre pas une restriction en lecture seule. Sans seconde identité limitée préparée, consigne les tests de refus NOT RUN.",
+      "builder_iteration": "Conserve le contrat R1 et corrige les écarts consignés dans notre cahier. Ajoute une vue distincte « preuve insuffisante » pour telemetry_complete=0 ; un zéro de télémétrie n’est pas un churn confirmé. Pour le même périmètre, compare la liste exacte d’account_id et le MRR total à R1. Affiche le calcul individuel de baisse et la borne stricte >40 %. Vérifie une fenêtre de renouvellement 2028, le consentement visible et l’identité sans droit de lecture. Le seuil peut être simulé localement mais doit être clairement indiqué comme une simulation non enregistrée. Fournis version et preuves, y compris les échecs. Sans seconde identité de test disponible, indique NOT RUN pour le refus d’accès ; le compte administrateur Trial ne valide pas ce contrôle."
+    },
+    {
+      "id": "sales",
+      "tag": "BONUS SALES",
+      "title": "Quel pipeline mérite notre attention ?",
+      "subtitle": "Exercice complémentaire de pipeline — proposition pédagogique, hors sélection principale Logfood",
+      "owner": "Responsable commercial / Revenue Operations",
+      "decision": "Après le parcours principal, examiner le pipeline de décembre. Ce bonus est une proposition pédagogique ; la recherche disponible ne justifie pas de le classer parmi les principaux cas DNB.",
+      "tables": [
+        "opportunities",
+        "account_snapshot"
+      ],
+      "query": "sales",
+      "query_id": "S1",
+      "contract": "Une ligne par opportunity_id, 360 opportunités. account_id est une FK vers un seul compte du snapshot, relation N:1. Montants en EUR ; exclure amount_verified=0 du KPI et montrer le compte exclu. Périmètre initial : expected_close_date du 1er décembre inclus au 1er janvier exclu, stages Discovery/Evaluation/Negotiation, snapshot 17 novembre. Pipeline ouvert = somme des montants vérifiés. Pipeline pondéré = somme montant × probabilité ; les probabilités 20/50/75 % sont pédagogiques, non calibrées, pas une prévision fiable. Won/Lost sont exclus. Opportunité sans activité depuis au moins 30 jours = à revoir ; ce signal ne prouve pas une perte. Ne jamais sommer le MRR compte après une jointure 1:N.",
+      "questions": [
+        "Quel est le pipeline ouvert de décembre 2026 par pays, en montant brut et pondéré ? Exclue Won et Lost et donne le SQL et les définitions.",
+        "Ne retiens que les montants vérifiés. Quel montant est sans activité depuis au moins 30 jours ? Vérifie que la jointure ne multiplie pas les opportunités.",
+        "Peut-on présenter le pipeline pondéré comme du revenu garanti ? Une opportunité importante mais inactive est-elle forcément perdue ? Propose la preuve à demander au commercial."
+      ],
+      "checks": [
+        [
+          "Normal",
+          "Même compte d’opportunités et montants que S1, tolérance ±0,01 EUR."
+        ],
+        [
+          "Incomplet",
+          "Montants non vérifiés exclus des KPI, population exclue explicitée."
+        ],
+        [
+          "Contre-exemple",
+          "Une opportunité inactive reste ouverte ; ne pas la classer automatiquement Lost."
+        ],
+        [
+          "Vide",
+          "Dates en 2028 : zéro opportunité et message clair."
+        ],
+        [
+          "Accès",
+          "Le compte Trial lit les sources. Le refus de lecture et d’écriture doit être testé avec une seconde identité limitée préparée ; sinon NOT RUN. Le propriétaire des tables ne valide pas une restriction en lecture seule."
+        ]
+      ],
+      "fallback": "Avec Genie uniquement, livrer la revue S1 et les hypothèses de pondération, sans déclarer une application construite.",
+      "builder_initial": "Nous participons au workshop AWS × Databricks à STATION F le 24 novembre 2026. NovaFlow est une entreprise SaaS B2B fictive. Toutes les données sont synthétiques, version stationf-synthetic-v1, arrêtées au 17 novembre 2026 ; elles ne décrivent aucun client réel.\nConstruis dans l’App Space préparé dans notre Trial une petite application en français, en lecture seule. Inspecte d’abord les schémas et les permissions. Si une source manque, si la requête échoue ou si l’identité n’a pas accès, affiche le problème ; n’invente ni colonne ni résultat et ne remplace pas la requête par un fichier local.\nUtilise exclusivement les objets du namespace {{catalog}}.{{schema}}. Utilise le catalogue et le schéma confirmés dans le reçu du notebook d’installation. Ne lis aucune autre donnée. Le mode d’accès attendu est l’autorisation utilisateur, avec l’identité du participant et les scopes confirmés par l’administrateur. Vérifie le mode réellement actif et affiche-le ; si seules des Shared data sont disponibles, fais confirmer ce changement avant de poursuivre. Un sélecteur visuel de rôle n’accorde aucun droit.\nAffiche les filtres, la date de référence, les unités EUR, la définition des KPI et les requêtes. Prévois les états chargement, absence de données, erreur et accès refusé. Lie les paramètres sans concaténation SQL. Aucun envoi de campagne, mise à jour CRM ou promesse d’enregistrement durable. Toute variation locale doit porter « Simulation — non enregistrée ».\n\nContrat métier : Une ligne par opportunity_id, 360 opportunités. account_id est une FK vers un seul compte du snapshot, relation N:1. Montants en EUR ; exclure amount_verified=0 du KPI et montrer le compte exclu. Périmètre initial : expected_close_date du 1er décembre inclus au 1er janvier exclu, stages Discovery/Evaluation/Negotiation, snapshot 17 novembre. Pipeline ouvert = somme des montants vérifiés. Pipeline pondéré = somme montant × probabilité ; les probabilités 20/50/75 % sont pédagogiques, non calibrées, pas une prévision fiable. Won/Lost sont exclus. Opportunité sans activité depuis au moins 30 jours = à revoir ; ce signal ne prouve pas une perte. Ne jamais sommer le MRR compte après une jointure 1:N.\n\nSources : {{catalog}}.{{schema}}.opportunities (opportunity_id, account_id, stage, amount_eur, probability, expected_close_date, days_since_activity, amount_verified, as_of_date) et {{catalog}}.{{schema}}.account_snapshot (account_id, company, country et le contrat associé).\nCrée « Revue pipeline décembre » avec trois KPI : pipeline ouvert vérifié, pipeline pondéré pédagogique, montant inactif depuis ≥30 jours. Montre le détail des opportunités, le pays, la dernière activité et les montants exclus pour manque de vérification. Filtres pays/stage/date. Rejoins les comptes une seule fois sur account_id au même snapshot. Compare à S1 dans sql/sales.sql. L’utilisateur peut préparer une liste de revue, sans modifier le CRM. Ne présente aucun montant comme un engagement ou une prévision ML.\nLe propriétaire du Trial peut écrire dans les tables. Ce compte ne démontre pas une restriction en lecture seule. Sans seconde identité limitée préparée, consigne les tests de refus NOT RUN.",
+      "builder_iteration": "Conserve le contrat S1 et les observations du cahier. Réconcilie le nombre d’opportunités, le pipeline ouvert et pondéré avec S1, même filtre et identité. Ajoute un contrôle de cardinalité avant/après jointure ; un compte peut avoir plusieurs opportunités et le MRR du compte ne doit pas être additionné plusieurs fois. Rends visibles les montants non vérifiés et les opportunités inactives. Teste une période 2028, un pays sans opportunité, et l’identité sans accès. Affiche « pondération pédagogique, non calibrée ». Toute modification locale des probabilités reste une simulation non enregistrée. Conserve la version précédente et fournis un relevé de vérification. Sans seconde identité de test disponible, indique NOT RUN pour le refus d’accès ; le compte administrateur Trial ne valide pas ce contrôle."
+    }
+  ],
+  "workbook_fields": [
+    [
+      "team",
+      "Équipe et rôles"
+    ],
+    [
+      "question",
+      "Notre question métier"
+    ],
+    [
+      "conversation",
+      "Conversation Genie et SQL exécuté"
+    ],
+    [
+      "findings",
+      "Résultats observés et définitions retenues"
+    ],
+    [
+      "observations",
+      "Écarts réellement observés / améliorations demandées"
+    ],
+    [
+      "app",
+      "Application : URL, version, aperçu ou déploiement"
+    ],
+    [
+      "verification",
+      "Vérifications : attendu, observé, statut, identité, date, preuve"
+    ],
+    [
+      "decision",
+      "Décision, limite principale et preuve manquante"
+    ],
+    [
+      "owner",
+      "Prochaine action, responsable et échéance"
+    ]
+  ],
+  "docs": [
+    {
+      "label": "Genie",
+      "url": "https://docs.databricks.com/aws/en/genie/"
+    },
+    {
+      "label": "Genie App Builder (Beta)",
+      "url": "https://docs.databricks.com/aws/en/dev-tools/databricks-apps/genie-app-builder"
+    },
+    {
+      "label": "Préparer son Trial AWS",
+      "url": "https://docs.databricks.com/aws/en/getting-started/free-trial"
+    }
+  ],
+  "branding": [
+    {
+      "file": "assets/databricks-logo.svg",
+      "source": "https://docs.databricks.com/aws/en/img/logo.svg"
+    },
+    {
+      "file": "assets/aws-logo.png",
+      "source": "https://a0.awsstatic.com/libra-css/images/logos/aws_logo_smile_1200x630.png"
+    }
+  ]
+}

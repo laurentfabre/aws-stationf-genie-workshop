@@ -1,0 +1,15 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Installer mon Trial · STATION F</title><link rel="stylesheet" href="assets/portal.css"></head><body><main class="guide"><p><a href="index.html">Retour au portail</a></p><h1>Prêt pour le 24 novembre.</h1><h2>Installer mon atelier dans un Trial AWS</h2>
+<p>Préparez votre compte avant le 24 novembre. L’installation est rejouable le jour J ; les dix premières minutes de pratique servent à vérifier l’environnement.</p>
+<ol>
+<li>Ouvrez un <a href="https://www.databricks.com/try-databricks">Trial Databricks sur AWS</a>. Express signup crée un workspace serverless sans identifiants AWS. Vérifiez crédits et date de fin : l’essai documenté dure 14 jours.</li>
+<li><a href="notebooks/00_START_HERE.ipynb" download>Téléchargez le notebook autonome</a>, puis utilisez <strong>Workspace → Import</strong> dans votre Trial. Choisissez <strong>Serverless</strong>.</li>
+<li>Exécutez jusqu’à « Préparer mon installation ». Renseignez les widgets : catalogue existant et inscriptible, schéma <code>stationf_20261124_votre_equipe</code>, SQL warehouse ID, action <code>installer</code>.</li>
+<li>Exécutez « Installer et vérifier », « Créer mon Genie Agent », puis « Mon reçu et mes liens ». Les trois tables et un Agent sont créés ; les ressources compatibles sont conservées à la relance.</li>
+<li>Ouvrez le lien Genie affiché. Reportez les valeurs du reçu dans « Liens de session et environnement » du portail. Posez votre première question et inspectez son SQL.</li>
+</ol>
+<p>Dans le ZIP extrait, le notebook est déjà dans <code>notebooks/00_START_HERE.ipynb</code> : sélectionnez directement ce fichier lors de l’import, sans le télécharger de nouveau. Un navigateur qui affiche du JSON peut aussi l’enregistrer avec l’extension <code>.ipynb</code>.</p>
+<p>Les 648 lignes synthétiques sont embarquées : aucun téléchargement depuis le calcul ni token à copier. Le kit réutilise votre warehouse ; il ne crée pas de compte, de catalogue ou d’App Space.</p>
+<p><strong>App Builder est conditionnel.</strong> Cette Beta demande une région compatible, la preview Governed agentic app-building et un App Space préparé. AWS Paris n’est pas dans la liste publiée au 17 novembre 2026. Si Builder est absent, approfondissez Genie et consignez Builder BLOCKED.</p>
+<p>Le propriétaire du Trial est souvent administrateur : les tests de refus exigent une seconde identité limitée, sinon NOT RUN. La répétition sur un vrai Trial reste à effectuer ; les contrôles locaux du kit ne la remplacent pas.</p>
+<p><a href="docs/TRIAL_SETUP.md">Guide Trial détaillé</a> · <a href="docs/TROUBLESHOOTING.md">Dépannage</a> · <a href="docs/APP_BUILDER.md">Préparer Builder</a> · <a href="docs/CLEANUP.md">Rejouer et nettoyer</a></p>
+</main></body></html>
