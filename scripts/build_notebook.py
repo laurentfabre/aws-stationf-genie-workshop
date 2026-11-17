@@ -4,7 +4,7 @@ from pathlib import Path
 R=Path(__file__).resolve().parents[1]
 w=json.loads((R/'workshop.json').read_text())
 data={n:json.loads((R/'data'/f'{n}.json').read_text()) for n in ['account_snapshot','campaign_weekly','opportunities']}
-sql={p.stem:p.read_text() for p in (R/'sql').glob('*.sql')}
+sql={p.stem:p.read_text() for p in sorted((R/'sql').glob('*.sql'))}
 expected=json.loads((R/'data/reference-results.json').read_text())['results']
 common={
  'account_id':'Identifiant de compte fictif ; clé unique de account_snapshot, FK non unique dans opportunities.',
