@@ -4,6 +4,10 @@
 
 Installez votre atelier dans un **Databricks Trial sur AWS**, puis travaillez en binôme sur une décision Sales & Marketing. Les données de NovaFlow sont entièrement synthétiques. Le notebook contient les données, les contrôles et la création d’un Genie Agent : aucun logiciel local, clé AWS ou token à copier.
 
+**[Télécharger le kit participant complet](https://github.com/laurentfabre/aws-stationf-genie-workshop/releases/latest/download/stationf-genie-participants-2026-11-24.zip)** · **[Notebook seul](https://github.com/laurentfabre/aws-stationf-genie-workshop/releases/latest/download/00_START_HERE.ipynb)** · **[Guide PDF](https://github.com/laurentfabre/aws-stationf-genie-workshop/releases/latest/download/guide.pdf)**
+
+Les téléchargements sont publics, sans compte GitHub. Extrayez le ZIP, ouvrez `index.html` pour les consignes et importez `notebooks/00_START_HERE.ipynb` dans **votre propre Trial**. Les données, requêtes, parcours et fichiers nécessaires sont inclus ; aucun accès à l’environnement du facilitateur n’est requis.
+
 ## Démarrer le jour J
 
 1. Ouvrez votre [Trial Databricks](https://www.databricks.com/try-databricks). Le parcours **Express signup** crée un workspace serverless sans fournir d’identifiants AWS. Préparez le compte avant l’atelier ; l’installation reste rejouable le jour J. [Guide détaillé](docs/TRIAL_SETUP.md).
@@ -39,7 +43,7 @@ Si Builder est indisponible, poursuivez les questions Genie, la comparaison SQL 
 - [Animation des deux heures](docs/FACILITATION.md), [rejeu et nettoyage](docs/CLEANUP.md)
 - [Validation et limites](docs/VALIDATION.md)
 
-Les vérifications locales couvrent les données, l’installateur avec services simulés et les formats distribués. **L’installation dans un vrai Trial, les réponses Genie, Builder et les accès sous une seconde identité restent NOT RUN.** Le reçu du notebook permet de recueillir ces preuves dans votre environnement.
+La version **v1.0.1** a été répétée sur **FEVM serverless avec le SDK fourni (0.20.0)** : installation neuve, relance sans changement, six références Spark, accès SQL warehouse et quatre questions Genie comparées aux résultats de référence. Les contrôles locaux couvrent aussi les formats distribués et les collisions simulées. **Un vrai Trial participant, Builder et les accès sous une seconde identité restent NOT RUN.** Le reçu du notebook permet de recueillir ces preuves dans votre environnement. [Détail des vérifications](docs/VALIDATION.md).
 
 ## Maintenir le kit
 

@@ -285,6 +285,42 @@ class GenieTests(unittest.TestCase):
         with patch.object(install.time,'monotonic',side_effect=[0,181]):
             with self.assertRaises(TimeoutError): install.warehouse_smoke(client,WH,CAT,SCHEMA)
 
+    def test_old_notebook_sdk_creates_then_recovers_without_overwrite(self):
+        # The default serverless SDK may not expose WorkspaceClient.genie at all.
+        for facade in (None, types.SimpleNamespace(list_spaces=Mock())):
+            with self.subTest(facade=facade):
+                stored = {}
+                calls = []
+                def request(method, path, query=None, body=None, **kwargs):
+                    calls.append((method, path, query))
+                    if method == 'POST':
+                        self.assertFalse(stored)
+                        stored.update(body, space_id='old-sdk-space')
+                        return dict(stored)
+                    if path.endswith('/old-sdk-space'):
+                        self.assertTrue(query['include_serialized_space'])
+                        return dict(stored)
+                    if not query.get('page_token'):
+                        return {'spaces': [], 'next_page_token': 'second-page'}
+                    return {'spaces': [dict(stored)] if stored else []}
+                client = types.SimpleNamespace(api_client=types.SimpleNamespace(do=request))
+                if facade is not None: client.genie = facade
+                self.assertEqual(install.ensure_genie(client,BUNDLE,CAT,SCHEMA,WH,OWNER),('old-sdk-space','CREATED'))
+                edited = json.loads(stored['serialized_space'])
+                edited['instructions']['text_instructions'][0]['content'] = ['Learner refinement']
+                stored['serialized_space'] = json.dumps(edited)
+                self.assertIn('UNCHANGED',install.ensure_genie(client,BUNDLE,CAT,SCHEMA,WH,OWNER)[1])
+                self.assertEqual(stored['serialized_space'],json.dumps(edited))
+                self.assertEqual(sum(method == 'POST' for method,_,_ in calls),1)
+
+    def test_old_sdk_list_failure_never_creates_an_agent(self):
+        api = Mock()
+        api.do.side_effect = RuntimeError('Permission denied')
+        client = types.SimpleNamespace(api_client=api)
+        with self.assertRaisesRegex(RuntimeError,'Permission denied'):
+            install.ensure_genie(client,BUNDLE,CAT,SCHEMA,WH,OWNER)
+        self.assertTrue(all(call.kwargs['method']=='GET' for call in api.do.call_args_list))
+
 
 class NotebookTests(unittest.TestCase):
     @classmethod

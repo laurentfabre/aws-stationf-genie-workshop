@@ -5,6 +5,8 @@ import math
 import re
 import time
 from decimal import Decimal
+from types import SimpleNamespace
+from urllib.parse import quote
 
 WORKSHOP = 'stationf-20261124'
 DATASET = 'stationf-synthetic-v1'
@@ -171,17 +173,50 @@ def genie_payload(bundle, catalog, schema):
                         '--rt=FROM_RELATIONSHIP_TYPE_MANY_TO_ONE--']}]}}
 
 
+class _GenieApi:
+    """Use the notebook SDK's native authentication when its Genie facade is absent."""
+    def __init__(self, api_client):
+        self.api_client = api_client
+
+    def list_spaces(self, page_size=100, page_token=None):
+        query = {'page_size': page_size}
+        if page_token is not None:
+            query['page_token'] = page_token
+        result = self.api_client.do(method='GET', path='/api/2.0/genie/spaces', query=query)
+        return SimpleNamespace(
+            spaces=[SimpleNamespace(space_id=s['space_id'], description=s.get('description'))
+                    for s in result.get('spaces', [])],
+            next_page_token=result.get('next_page_token'))
+
+    def get_space(self, space_id, include_serialized_space=True):
+        result = self.api_client.do(method='GET', path='/api/2.0/genie/spaces/'+quote(space_id, safe=''),
+                                    query={'include_serialized_space': include_serialized_space})
+        return SimpleNamespace(space_id=result['space_id'], warehouse_id=result.get('warehouse_id'),
+                               serialized_space=result.get('serialized_space'))
+
+    def create_space(self, **body):
+        result = self.api_client.do(method='POST', path='/api/2.0/genie/spaces', body=body,
+                                    headers={'Accept': 'application/json', 'Content-Type': 'application/json'})
+        return SimpleNamespace(space_id=result['space_id'])
+
+
 def ensure_genie(client, bundle, catalog, schema, warehouse_id, owner):
     """Recover by ownership marker, and preserve learner edits on rerun."""
     namespace(catalog, schema)
     if not re.fullmatch(r'[a-fA-F0-9]{16}', warehouse_id):
         raise ValueError('Warehouse ID requis : copier ses 16 caractères depuis SQL Warehouses.')
+    genie = getattr(client, 'genie', None)
+    if not all(callable(getattr(genie, name, None)) for name in ('list_spaces','get_space','create_space')):
+        api_client = getattr(client, 'api_client', None)
+        if not callable(getattr(api_client, 'do', None)):
+            raise RuntimeError('SDK incompatible. Créez l’Agent dans l’interface selon docs/TROUBLESHOOTING.md.')
+        genie = _GenieApi(api_client)
     marker = f'[{WORKSHOP}:{catalog}.{schema}:{hashlib.sha256(owner.encode()).hexdigest()[:12]}]'
     matches = []
     token = None
     seen = set()
     while True:
-        page = client.genie.list_spaces(page_size=100, page_token=token)
+        page = genie.list_spaces(page_size=100, page_token=token)
         for space in page.spaces or []:
             if marker in (space.description or ''): matches.append(space)
         token = page.next_page_token
@@ -191,14 +226,14 @@ def ensure_genie(client, bundle, catalog, schema, warehouse_id, owner):
     if len(matches)>1:
         raise RuntimeError('Plusieurs Agents pour cette édition. Choisissez avec le facilitateur ; aucun doublon supplémentaire créé.')
     if matches:
-        existing=client.genie.get_space(space_id=matches[0].space_id, include_serialized_space=True)
+        existing=genie.get_space(space_id=matches[0].space_id, include_serialized_space=True)
         payload=json.loads(existing.serialized_space or '{}')
         expected={f'{catalog}.{schema}.{name}' for name in TABLES}
         actual={x['identifier'] for x in payload.get('data_sources',{}).get('tables',[])}
         if actual!=expected or existing.warehouse_id!=warehouse_id:
             raise RuntimeError('Agent retrouvé mais sources/warehouse différents. Aucun changement automatique.')
         return existing.space_id, 'UNCHANGED — instructions participant préservées'
-    created=client.genie.create_space(warehouse_id=warehouse_id,
+    created=genie.create_space(warehouse_id=warehouse_id,
         serialized_space=json.dumps(genie_payload(bundle,catalog,schema),ensure_ascii=False),
         title=f'STATION F — Sales & Marketing — {schema}',
         description=f'{marker} Atelier pédagogique, données synthétiques. Campagnes, segmentation, rétention ; pipeline en bonus.')

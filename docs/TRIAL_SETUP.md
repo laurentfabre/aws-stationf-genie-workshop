@@ -23,7 +23,7 @@ L’installateur ne crée aucun catalogue ou warehouse. Réutilisez le warehouse
 2. Dans le workspace, ouvrez votre dossier personnel, puis **Import** et chargez le fichier `.ipynb`. Selon la version de l’interface, Import se trouve dans le menu du dossier.
 3. Sélectionnez **Serverless** en haut du notebook. Exécutez la première cellule de code, puis la cellule « Préparer mon installation ».
 
-Le fichier `.py` est également un notebook au format source Databricks et constitue un recours à l’import `.ipynb`. Les 648 lignes de données et les fonctions sont embarquées : aucun `git clone`, téléchargement depuis le calcul, package externe ou token personnel n’est nécessaire au parcours normal. Le SDK fourni par le notebook doit exposer les méthodes Genie requises ; voir [dépannage](TROUBLESHOOTING.md) si ce n’est pas le cas.
+Le fichier `.py` est également un notebook au format source Databricks et constitue un recours à l’import `.ipynb`. Les 648 lignes de données et les fonctions sont embarquées : aucun `git clone`, téléchargement depuis le calcul, package externe ou token personnel n’est nécessaire au parcours normal. L’installateur prend en charge les SDK sans méthodes Genie via leur client API authentifié ; voir [dépannage](TROUBLESHOOTING.md) si l’API reste inaccessible.
 
 ## 3. Choisir les paramètres
 

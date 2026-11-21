@@ -1,33 +1,60 @@
 # Validation de cette édition
 
-Dataset : **stationf-synthetic-v1**, snapshot **17 novembre 2026**. Version distribuée : **v1.0.0**. Les résultats locaux sont reproductibles avec les scripts du dépôt. Les horodatages et détails des contrôles navigateur sont conservés par le mainteneur, sans identifiants de participant.
+Dataset : **stationf-synthetic-v1**, snapshot **17 novembre 2026**. Version distribuée : **v1.0.1**. Vérifications du **21 novembre 2026**.
 
 | Niveau | Statut | Portée |
 |---|---|---|
-| Supports | **PASS — vérifications locales** | 31 tests Python, 48 contrôles navigateur, 5 contrôles du ZIP extrait |
-| Environnement de répétition Trial | **NOT RUN** | Aucun Trial de répétition ni identité de déploiement sélectionné pour cette édition |
-| Environnement des participants | **NOT RUN** | Provisionnement, région, crédits, droits et capacités à vérifier pour chaque Trial |
+| Supports | **PASS — vérifications locales** | 33 tests Python, 48 contrôles navigateur, 5 contrôles du ZIP extrait |
+| Répétition FEVM sur AWS | **PASS — périmètre ci-dessous** | Installation neuve, relance, Spark, warehouse et quatre questions Genie |
+| Vrai Trial participant | **NOT RUN** | Provisionnement, région, crédits, droits et capacités à vérifier dans chaque Trial |
+| Builder et seconde identité | **NOT RUN** | Génération d’application et contrôles d’accès distincts |
 
-Les tests Python vérifient les références SQL avec SQLite, les clés et jointures, les valeurs manquantes, les seuils métier, le contenu embarqué dans le notebook et l’absence de sorties enregistrées. Les tests de l’installateur utilisent des services Spark/SDK simulés pour vérifier création, relance, collisions, pagination Genie et erreurs. Ils **n’exécutent pas** Spark ou l’API Databricks.
+## Répétition FEVM du 21 novembre
 
-Les vérifications navigateur portent sur les quatre parcours, les liens d’installation, les prompts, les notes locales, exports/imports, l’affichage mobile et le PDF. L’archive extraite est contrôlée séparément. Une case du cahier participant n’exécute aucun test.
+Le notebook public a été importé au format Jupyter, avec une seule cellule de collecte ajoutée après les cellules distribuées. Les deux tâches serverless successives utilisent le **SDK 0.20.0 fourni**, sans installation de package supplémentaire et avec l’authentification native du notebook. Les données et SQL sont ceux du téléchargement public.
 
-Dernière vérification locale : **17 novembre 2026**, Python/SQLite et Chrome headless avec profil isolé, sans connexion Databricks. L’archive contient **43 fichiers** contrôlés par SHA-256. Le notebook distribué n’a aucune sortie enregistrée. Les contrôles de publication n’ont détecté aucun nom client recherché, identifiant CRM, hôte interne, chemin personnel ou credential dans les fichiers distribués. Les recherches sources internes restent hors du dépôt.
+Empreinte SHA-256 du notebook participant testé : `67ebb57914e46c0f118ecdd299653a72e1aeb4572de81fc9db5d369f711e0cad`.
 
-Les premières vérifications ont identifié des valeurs JSON entières dans une colonne Spark DOUBLE ; le notebook normalise désormais ce type et ses empreintes pour permettre une relance. Le guide précise aussi que le notebook déjà extrait du ZIP doit être sélectionné directement dans Import. Les références métier n’ont pas été modifiées.
+| Contrôle | Résultat observé |
+|---|---|
+| Installation dans un schéma neuf | **PASS** : trois tables créées, 240 comptes, 48 lignes campagne/semaine, 360 opportunités ; Genie Agent créé |
+| Relance dans le même schéma | **PASS** : trois tables UNCHANGED, mêmes empreintes de données et même identifiant Genie |
+| Six références via Spark | **PASS** aux deux exécutions : activation, cas vide, marketing, qualité, rétention et pipeline |
+| Lecture via SQL warehouse | **PASS** aux deux exécutions : 240 comptes lus par le warehouse |
+| Question Genie de référence Marketing | **PASS** : 6 canaux, valeurs comparées aux références |
+| Question Genie de référence Activation | **PASS** : 4 groupes, effectifs, MRR et éligibilité comparés |
+| Question Genie de référence Rétention | **PASS** : 8 comptes, valeurs comparées |
+| Question Genie de référence Pipeline | **PASS** : 3 pays, montants et effectifs comparés |
+| Question de suivi Rétention dans la même conversation | **PASS** : 8 comptes, 33 700 EUR/mois ; la réponse précise que la baisse d’usage ne prouve pas un revenu perdu |
 
-## Contrôles à réaliser dans un vrai Trial
+Les réponses Genie ont été exécutées par leur warehouse. Les résultats ont été récupérés via les pièces jointes Genie et via l’API Statement Execution pour les mêmes requêtes, puis comparés aux références du kit. Le coût d’acquisition NULL du canal Expérimentation est sérialisé en chaîne vide dans la pièce jointe Genie ; le résultat SQL confirme explicitement NULL. Aucune conversion générale de chaînes vides en NULL n’a été appliquée. Les tolérances sont celles de `src/installer.py` : entiers exacts, ROAS ±0,0001, autres valeurs numériques ±0,01.
+
+Les reçus complets, identités, IDs de runs, conversations et statements sont conservés par le mainteneur hors du dépôt public. Ce rapport décrit la répétition sous le propriétaire FEVM ; il ne constitue pas une exécution sous un compte Trial participant, une preuve d’isolation des accès ou une évaluation exhaustive de toutes les formulations et questions de suivi.
+
+## Contrôles locaux
+
+Les 33 tests Python vérifient les références SQL avec SQLite, les clés et jointures, les valeurs manquantes, les seuils métier, le contenu embarqué dans le notebook et l’absence de sorties enregistrées. Les services Spark/SDK simulés couvrent création, relance, collisions, pagination Genie, SDK sans facade Genie et erreurs. Ces tests locaux n’exécutent pas Spark ou l’API Databricks ; la répétition ci-dessus les complète.
+
+Les 48 contrôles Chrome headless portent sur les quatre parcours, les téléchargements, les prompts, les notes locales, exports/imports, l’affichage mobile et le PDF. Les 5 contrôles du ZIP réellement extrait couvrent son ouverture hors ligne, les liens, le guide Trial et le notebook importable. Une case du cahier participant n’exécute aucun test.
+
+L’archive contient **43 fichiers** contrôlés par SHA-256. Le notebook distribué ne contient aucune sortie enregistrée. Les sources et reçus internes restent hors du dépôt ; les bindings distribués sont vides. Python 3.11+ suffit aux tests locaux.
+
+## Historique des corrections
+
+- La répétition du 21 novembre a reproduit l’échec de v1.0.0 : le SDK serverless fourni ne possède pas `WorkspaceClient.genie`. **v1.0.1** utilise alors le client API authentifié du SDK existant, avec les mêmes protections contre doublons et écrasement. Une nouvelle installation et une relance ont ensuite réussi sans mise à jour de package.
+- Les premières vérifications locales avaient identifié des valeurs JSON entières dans une colonne Spark DOUBLE ; la normalisation numérique et les empreintes prennent en charge ce cas.
+
+## Contrôles à réaliser dans chaque Trial
 
 | Contrôle | Statut initial | Preuve à conserver |
 |---|---|---|
-| Installation dans un schéma neuf | NOT RUN | Reçu, workspace, identité, date et état des trois tables |
-| Relance dans le même schéma | NOT RUN | Tables et Agent conservés, pas de doublon |
-| Six références via Spark + lecture SQL warehouse | NOT RUN | Sorties et statement ID du notebook |
-| Questions et suivi Genie, par parcours retenu | NOT RUN | Conversation, SQL, résultats, interprétation et comparaison |
+| Installation dans un schéma neuf puis relance | NOT RUN | Reçus, identité effective, état des trois tables et Agent conservé |
+| Six références Spark et accès warehouse | NOT RUN | Sorties et statement ID du notebook |
+| Questions et suivi Genie du parcours choisi | NOT RUN | Conversation, SQL, résultats et comparaison |
 | Génération et itération Builder | NOT RUN | Région/preview, App Space, version et observations |
 | Application publiée, si promise | NOT RUN | URL et vérification indépendante du preview |
 | Accès autorisé / refusé sous deux identités | NOT RUN | Identités effectives, permissions et résultat des requêtes |
 
 Remplissez PASS / FAIL / BLOCKED / NOT RUN avec l’environnement, l’identité, la date et un lien de preuve. Conservez les erreurs antérieures. Une lecture réussie sous le propriétaire Trial ne prouve pas le refus d’écriture d’un participant limité. Si Builder manque, le parcours Genie reste utilisable mais Builder reste BLOCKED.
 
-Les signatures SDK et prérequis sont fondés sur la documentation officielle consultée le 17 novembre 2026 ; aucune disponibilité future ni durée d’installation n’est garantie. La version SDK 0.167.0 est une option de dépannage, pas une dépendance téléchargée ou testée par les contrôles locaux.
+Les prérequis d’offre, de région et de Builder restent ceux de la documentation consultée le 17 novembre 2026 ; aucune disponibilité future ni durée d’installation n’est garantie. Les endpoints de compatibilité SDK ont été contrôlés dans le SDK officiel et exécutés sur FEVM le 21 novembre.

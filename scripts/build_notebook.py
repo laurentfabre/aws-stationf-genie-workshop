@@ -136,9 +136,6 @@ py('''if not globals().get('DATA_READY'):
 GENIE_URL = ''
 GENIE_STATUS = 'NOT RUN — mode verifier'
 if ACTION == 'installer':
-    required = ('create_space','list_spaces','get_space')
-    if not all(hasattr(w.genie, name) for name in required):
-        raise RuntimeError('SDK notebook trop ancien. Créez l’Agent dans l’interface, ou mettez à jour databricks-sdk selon docs/TROUBLESHOOTING.md.')
     try:
         SPACE_ID, GENIE_STATUS = ensure_genie(w, BUNDLE, CATALOG, SCHEMA, WAREHOUSE_ID, OWNER)
         GENIE_URL = f'{HOST}/genie/rooms/{SPACE_ID}'

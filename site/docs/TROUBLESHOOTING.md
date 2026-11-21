@@ -28,10 +28,6 @@ Un Agent créé manuellement n’est pas automatiquement adopté par l’install
 
 ## SDK du notebook ancien
 
-Le parcours normal utilise `databricks.sdk.WorkspaceClient()` avec l’identité native du notebook. Si les méthodes `create_space`, `list_spaces` ou `get_space` manquent, privilégiez l’interface ci-dessus. Si le facilitateur confirme l’accès au dépôt de packages depuis votre Trial, une cellule séparée peut mettre à jour le SDK :
+Le parcours normal utilise `databricks.sdk.WorkspaceClient()` avec l’identité native du notebook. Si `WorkspaceClient.genie` ou les méthodes nécessaires manquent, l’installateur utilise automatiquement les mêmes endpoints Genie via le client API authentifié du SDK fourni. Aucun package supplémentaire, redémarrage Python ou token personnel n’est nécessaire.
 
-```python
-%pip install databricks-sdk==0.167.0
-```
-
-Puis exécutez `dbutils.library.restartPython()` et relancez les cellules de préparation avec les mêmes paramètres. Cette version correspond à la version officielle publiée le 16 novembre 2026 ; son installation dans un Trial n’a pas été répétée pour ce kit. Les essais à egress limité peuvent bloquer ce téléchargement. Aucun token personnel n’est nécessaire.
+Avec la version **v1.0.0**, l’erreur `AttributeError: 'WorkspaceClient' object has no attribute 'genie'` pouvait survenir après l’installation des tables. Téléchargez le notebook de la dernière release, importez-le sous un nouveau nom et relancez-le avec les mêmes catalogue, schéma et warehouse : les tables compatibles sont conservées. Si l’API Genie reste inaccessible pour des raisons de droits ou de disponibilité, utilisez la procédure manuelle ci-dessus ; une mise à jour du SDK ne donne pas de nouveaux droits.
