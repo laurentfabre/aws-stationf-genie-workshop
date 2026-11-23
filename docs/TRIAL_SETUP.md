@@ -42,7 +42,7 @@ Exécutez « Installer et vérifier ». En mode `revue`, la cellule s’arrête 
 
 Exécutez « Créer mon Genie Agent », puis « Mon reçu et mes liens ». Ouvrez le lien retourné. Choisissez votre parcours et posez sa première question. Ouvrez le SQL généré et comparez-le à la requête de référence. Conservez la conversation et un résultat : la création de l’Agent ne valide pas ses réponses.
 
-Téléchargez le ZIP participant depuis **Releases**, extrayez-le, puis ouvrez `index.html`. Reportez workspace, catalogue, schéma, warehouse et URL Genie du reçu dans « Liens de session et environnement ». Les liens restent dans votre navigateur. L’App Space se renseigne seulement si [Builder est préparé](APP_BUILDER.md).
+Téléchargez le ZIP participant depuis **Releases**, extrayez-le, puis ouvrez `index.html`. Dans **Mes liens Databricks**, collez le bloc JSON du reçu puis choisissez **Utiliser les liens du reçu**. Vous pouvez aussi ouvrir la saisie manuelle. Le studio conserve uniquement les paramètres de session utiles ; l’identité et les autres champs du reçu ne sont pas importés. Les liens restent dans votre navigateur. L’App Space se renseigne seulement si [Builder est préparé](APP_BUILDER.md).
 
 ## Checklist du 24 novembre
 

@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#102c32" />
+    <title>Installer mon Trial · STATION F</title>
+    <link rel="stylesheet" href="assets/portal.css" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22%3E%3Crect width=%2240%22 height=%2240%22 rx=%229%22 fill=%22%23102c32%22/%3E%3Cpath d=%22m20 7 4 9 9 4-9 4-4 9-4-9-9-4 9-4Z%22 fill=%22%23e8c6a0%22/%3E%3C/svg%3E"
+    />
+  </head>
+  <body class="setup-page">
+    <header class="topbar">
+      <a href="index.html" class="brand-home" aria-label="Retour au studio"
+        ><span class="brands"
+          ><img src="assets/databricks-logo.svg" alt="Databricks" /><span
+            class="brand-divider"
+          ></span
+          ><img class="aws" src="assets/aws-logo.png" alt="AWS" /></span></a
+      ><a class="button" href="index.html">← Retour au studio</a>
+    </header>
+    <main class="setup-shell" id="installation">
+      <section class="setup-hero">
+        <p class="eyebrow">AVANT D’EXPLORER, PRÉPAREZ VOTRE TERRAIN DE JEU.</p>
+        <h1>Votre atelier.<br /><em>Votre propre espace.</em></h1>
+        <p>
+          Un notebook à importer dans votre Trial AWS.<br />Les données, les
+          contrôles et votre Genie Agent sont inclus.
+        </p>
+        <a
+          class="button setup-download"
+          href="notebooks/00_START_HERE.ipynb"
+          download
+          >Télécharger mon notebook <span aria-hidden="true">↓</span></a
+        ><span class="download-meta"
+          >Fichier .ipynb · Données synthétiques embarquées · Aucun token à
+          copier</span
+        >
+      </section>
+      <div class="setup-layout">
+        <div class="setup-steps">
+          <article class="setup-step">
+            <span class="setup-number">01</span>
+            <div>
+              <span class="eyebrow">VOTRE COMPTE</span>
+              <h2>Ouvrez votre Trial Databricks sur AWS.</h2>
+              <p>
+                Le parcours <strong>Express signup</strong> crée un workspace
+                serverless sans identifiants AWS. Préparez votre compte avant
+                l’atelier et vérifiez vos crédits et sa date de fin.
+              </p>
+              <a
+                href="https://www.databricks.com/try-databricks"
+                class="button"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Créer ou ouvrir mon Trial ↗</a
+              >
+              <details>
+                <summary>
+                  J’ai déjà un compte ou j’hésite entre les offres
+                </summary>
+                <p>
+                  Trial et Free Edition sont des offres distinctes. Le Trial
+                  documenté le 17 novembre 2026 dure 14 jours. AWS Marketplace
+                  peut engager une facturation AWS. Vérifiez que votre espace
+                  possède Serverless, un SQL warehouse, un catalogue
+                  inscriptible et l’accès à Genie.
+                </p>
+                <a href="docs/TRIAL_SETUP.md">Lire le guide Trial détaillé →</a>
+              </details>
+            </div>
+          </article>
+          <article class="setup-step">
+            <span class="setup-number">02</span>
+            <div>
+              <span class="eyebrow">VOTRE NOTEBOOK</span>
+              <h2>Importez-le. Choisissez Serverless.</h2>
+              <p>
+                Dans <strong>Workspace → Import</strong>, sélectionnez le
+                fichier <code>00_START_HERE.ipynb</code>. Ouvrez le notebook,
+                choisissez <strong>Serverless</strong>, puis exécutez jusqu’à «
+                Préparer mon installation ».
+              </p>
+              <div class="setup-tip">
+                <strong>Vous avez déjà extrait le kit ?</strong>
+                <p>
+                  Le notebook est dans le dossier <code>notebooks/</code>.
+                  Importez directement ce fichier, sans le télécharger à
+                  nouveau. Si un navigateur affiche du JSON, enregistrez-le avec
+                  l’extension <code>.ipynb</code>.
+                </p>
+              </div>
+            </div>
+          </article>
+          <article class="setup-step">
+            <span class="setup-number">03</span>
+            <div>
+              <span class="eyebrow">VOTRE JEU D’ESSAI</span>
+              <h2>Installez le terrain de jeu NovaFlow.</h2>
+              <p>
+                Utilisez le catalogue et le warehouse affichés par le notebook.
+                Choisissez un schéma dédié à votre binôme et l’action
+                <strong>installer</strong>, puis lancez les cellules suivantes
+                dans l’ordre.
+              </p>
+              <div class="setup-parameters">
+                <div>
+                  <span>Catalogue</span
+                  ><strong>Existant et inscriptible</strong>
+                </div>
+                <div>
+                  <span>Schéma</span><code>stationf_20261124_votre_equipe</code>
+                </div>
+                <div>
+                  <span>Warehouse ID</span
+                  ><strong>Les 16 caractères de son ID</strong>
+                </div>
+                <div><span>Action</span><strong>installer</strong></div>
+              </div>
+              <p>
+                Vous obtenez trois petites tables :
+                <strong
+                  >240 comptes, 48 lignes campagne/semaine et 360
+                  opportunités</strong
+                >. Le notebook vérifie six résultats de référence, teste la
+                lecture via votre warehouse et crée votre Genie Agent.
+              </p>
+              <details>
+                <summary>Une erreur ou une installation à relancer ?</summary>
+                <p>
+                  Une relance dans le même schéma conserve les données
+                  compatibles et les instructions de votre Agent. Le kit refuse
+                  d’écraser une table existante incompatible. Le mode
+                  <code>revue</code> s’arrête volontairement après le plan, sans
+                  rien installer.
+                </p>
+                <a href="docs/TROUBLESHOOTING.md">Ouvrir le dépannage →</a>
+              </details>
+            </div>
+          </article>
+          <article class="setup-step">
+            <span class="setup-number">04</span>
+            <div>
+              <span class="eyebrow">PRÊT À EXPLORER</span>
+              <h2>Ouvrez Genie. Retrouvez votre studio.</h2>
+              <p>
+                Dans « Mon reçu et mes liens », ouvrez le lien de votre Genie
+                Agent. Copiez ensuite le bloc JSON du reçu et, dans le studio,
+                ouvrez <strong>Mes liens Databricks</strong> pour le coller en
+                une fois.
+              </p>
+              <a href="index.html#studio" class="button primary"
+                >Revenir à mon studio →</a
+              >
+              <p class="setup-small">
+                Vos liens et notes restent dans votre navigateur. Une note
+                enregistrée ne prouve pas qu’une requête a été exécutée.
+              </p>
+            </div>
+          </article>
+        </div>
+        <aside class="setup-reassurance">
+          <span class="chip">VOTRE KIT EST AUTONOME</span>
+          <h3>Concentrez-vous<br />sur la bonne question.</h3>
+          <ul>
+            <li>Vos propres données d’essai</li>
+            <li>Votre propre Genie Agent</li>
+            <li>Aucun logiciel local à installer</li>
+            <li>Aucune clé AWS ou token à copier</li>
+            <li>Aucun accès au workspace du facilitateur</li>
+          </ul>
+          <div class="setup-tip">
+            <strong>App Builder est conditionnel.</strong>
+            <p>
+              Cette étape dépend de la région, des previews et d’un App Space
+              préparé. Si elle est indisponible, continuez à enquêter avec Genie
+              et notez Builder BLOCKED.
+            </p>
+            <a href="docs/APP_BUILDER.md">Voir les prérequis →</a>
+          </div>
+          <p class="setup-small">
+            Les notes restent locales ; Genie, SQL Databricks et Builder
+            nécessitent une connexion. La répétition FEVM ne remplace pas la
+            vérification de votre Trial. Les tests de refus d’accès exigent une
+            seconde identité limitée ; sinon NOT RUN.
+          </p>
+        </aside>
+      </div>
+      <footer class="footer">
+        <div>
+          <strong>AWS × Databricks</strong
+          ><span>STATION F · 24 novembre 2026</span>
+        </div>
+        <p>
+          Données entièrement synthétiques · NovaFlow, entreprise fictive.<br /><a
+            href="docs/TRIAL_SETUP.md"
+            >Guide complet</a
+          >
+          · <a href="docs/CLEANUP.md">Rejouer et nettoyer</a> ·
+          <a href="docs/VALIDATION.md">État des vérifications</a>
+        </p>
+      </footer>
+    </main>
+  </body>
+</html>

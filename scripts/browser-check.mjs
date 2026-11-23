@@ -30,6 +30,7 @@ try{
  check('copy-question',await page.evaluate(()=>navigator.clipboard.readText()).then(s=>s.includes('ROAS')));
  await page.locator('[data-step="3"]').click();await page.locator('[data-copy="build1"]').click();
  check('unbound-prompt-blocked',await page.locator('#status').innerText().then(s=>s.includes('catalogue')));
+ await page.locator('#manual-settings summary').click();
  for(const [key,value] of Object.entries({workspace_url:'https://example.cloud.databricks.com',catalog:'workshop',schema:'stationf_20261124_test',genie_url:'https://example.cloud.databricks.com/genie/EXAMPLE',app_space_url:'https://example.cloud.databricks.com/apps'}))await page.locator('#binding-'+key).fill(value);
  await page.locator('#save-bindings').click();await page.locator('[data-copy="build1"]').click();
  check('bound-prompt-copy',await page.evaluate(()=>navigator.clipboard.readText()).then(s=>s.includes('workshop.stationf_20261124_test.campaign_weekly')&&!s.includes('{{')));
@@ -47,7 +48,7 @@ try{
  const dl2=page.waitForEvent('download');await page.locator('#export-md').click();const f2=await dl2;const mdFile=path.join(root,'.validation/browser-workbook.md');await f2.saveAs(mdFile);check('markdown-export',fs.readFileSync(mdFile,'utf8').includes('Camille'));
  const popupPromise=page.waitForEvent('popup');await page.locator('#print-notes').click();const pop=await popupPromise;await pop.waitForLoadState();check('print-nonempty-notes',await pop.locator('body').innerText().then(s=>s.includes('Camille')&&s.includes('attribution non causale')));await pop.close();
  await page.locator('[data-step="0"]').click();await page.locator('#track').selectOption('marketing');
- await page.locator('#settings summary').click();
+ await page.locator('#session-toggle').click();
  await page.screenshot({path:path.join(root,'.validation/portal-desktop.png'),fullPage:true});
  check('desktop-no-overflow',await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth));
  await page.setViewportSize({width:390,height:844});await page.screenshot({path:path.join(root,'.validation/portal-mobile.png'),fullPage:true});
@@ -62,7 +63,8 @@ try{
   }
  }
  await page.locator('#track').selectOption('marketing');await page.locator('[data-step="0"]').click();
- if(!await page.locator('#settings').evaluate(e=>e.open))await page.locator('#settings summary').click();
+ if(!await page.locator('#settings').evaluate(e=>e.open))await page.locator('#session-toggle').click();
+ if(!await page.locator('#manual-settings').evaluate(e=>e.open))await page.locator('#manual-settings summary').click();
  for(const key of ['workspace_url','catalog','schema','genie_url','app_space_url'])await page.locator('#binding-'+key).fill('');
  await page.locator('#save-bindings').click();
  check('environment-notes-preserved',await page.locator('[data-note="team"]').inputValue()==='Équipe test — Métier / IT');

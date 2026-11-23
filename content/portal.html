@@ -1,10 +1,347 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>STATION F · Workshop Genie · 24 novembre 2026</title><link rel="stylesheet" href="assets/portal.css"></head><body>
-<a class="skip" href="#main">Aller à l’exercice</a>
-<header class="topbar"><div class="brands"><img src="assets/databricks-logo.svg" alt="Databricks"><img class="aws" src="assets/aws-logo.png" alt="AWS"></div><div class="eventdate">STATION F · PARIS<br>24 NOVEMBRE 2026</div></header>
-<div class="shell"><section class="hero"><div><div class="eyebrow">WORKSHOP GENIE · SALES & MARKETING</div><h1>De la question<br>à la <em>décision.</em></h1><p class="lead">Deux heures pour interroger vos données, vérifier les réponses et construire un usage que votre équipe pourra réutiliser.</p><span class="pill">En français</span><span class="pill">En binôme</span><span class="pill">09:45 → 11:45</span></div><aside class="heroaside"><div class="eyebrow">VOTRE MISSION</div><h2>Une question.<br>Une preuve.<br>Une prochaine action.</h2><p>Choisissez votre parcours. Le métier porte la décision ; le partenaire technique vérifie les sources et les accès.</p><span class="pill">Genie → application → vérification</span></aside></section>
-<div class="notice"><strong>Installer mon atelier dans un Trial AWS</strong><p>Importez le notebook autonome, installez les données et ouvrez votre Genie Agent. <a href="trial.html">Suivre les étapes d’installation →</a></p></div>
-<div class="toolbar"><label for="track">Votre parcours</label><select id="track"></select><a href="guide.html" class="button">Guide imprimable</a><a href="participant-kit.zip" class="button">Télécharger le kit</a></div>
-<details class="no-print" id="settings"><summary>Liens de session et environnement</summary><p class="muted">À renseigner avec le reçu de votre notebook d’installation ; l’App Space vient de la préparation Builder. Aucune connexion automatique : ces liens n’accordent aucun droit. Les notes restent séparées pour chaque workspace, dataset et parcours.</p><div id="binding-fields"></div><button id="save-bindings">Utiliser cet environnement</button><p id="binding-status" role="status"></p></details>
-<div class="layout"><nav class="steps" aria-label="Étapes de votre parcours" id="steps"></nav><main class="content" id="main" tabindex="-1"></main></div>
-<div id="status" class="status no-print" aria-live="polite"></div><footer class="footer"><span>Données synthétiques · NovaFlow, entreprise fictive · v1 · arrêté au 17/11/2026</span><span>Les notes sont locales à ce navigateur. Exportez-les avant de partir.</span></footer></div>
-<script id="workshop-data" type="application/json">__DATA__</script><script src="assets/portal.js"></script></body></html>
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#102c32" />
+    <meta
+      name="description"
+      content="Votre atelier AWS × Databricks à STATION F. Choisissez une mission, explorez avec Genie et transformez vos découvertes en décision."
+    />
+    <title>STATION F · Le studio des décisions · Atelier Genie</title>
+    <link rel="stylesheet" href="assets/portal.css" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22%3E%3Crect width=%2240%22 height=%2240%22 rx=%229%22 fill=%22%23102c32%22/%3E%3Cpath d=%22m20 7 4 9 9 4-9 4-4 9-4-9-9-4 9-4Z%22 fill=%22%23e8c6a0%22/%3E%3C/svg%3E"
+    />
+  </head>
+  <body>
+    <a class="skip" href="#main">Aller à l’exercice</a>
+    <header class="topbar">
+      <a
+        class="brand-home"
+        href="#accueil"
+        aria-label="AWS et Databricks — accueil de l’atelier"
+        ><span class="brands"
+          ><img src="assets/databricks-logo.svg" alt="Databricks" /><span
+            class="brand-divider"
+            aria-hidden="true"
+          ></span
+          ><img class="aws" src="assets/aws-logo.png" alt="AWS" /></span
+      ></a>
+      <span class="header-event"
+        >STATION F <span>PARIS / 24.11.2026</span></span
+      >
+      <div class="header-actions">
+        <button class="quiet" id="open-workbook">
+          <span data-icon="notebook"></span><span>Mon cahier</span
+          ><span class="note-counter" id="header-note-count">0</span></button
+        ><a
+          class="icon-link"
+          href="guide.html"
+          aria-label="Ouvrir le guide imprimable"
+          ><span data-icon="book"></span
+        ></a>
+      </div>
+    </header>
+    <div class="shell" id="accueil">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow">
+            <span class="live-dot" aria-hidden="true"></span> L’ATELIER DATA +
+            AI DES ÉQUIPES MÉTIER
+          </p>
+          <h1 id="hero-title">
+            Vos questions.<br />Vos données.<br /><em>Vos décisions.</em>
+          </h1>
+          <p class="lead">
+            Aujourd’hui, l’IA devient votre partenaire de décision.<br />Une
+            mission concrète. Deux heures pour passer à l’action.
+          </p>
+          <div class="hero-actions">
+            <button class="primary warm" id="start-mission">
+              Choisir ma mission <span data-icon="arrow"></span></button
+            ><span class="hero-detail"
+              >En binôme · En français<br />Questions en français, dans
+              Genie</span
+            >
+          </div>
+        </div>
+        <div
+          class="hero-art"
+          aria-label="Votre parcours : une question métier, une exploration avec Genie, une décision étayée."
+        >
+          <div class="art-orbit orbit-one"></div>
+          <div class="art-orbit orbit-two"></div>
+          <div class="art-grid"></div>
+          <div class="art-caption">LE POUVOIR D’UNE BONNE QUESTION</div>
+          <div class="art-question">
+            <span class="art-avatar"><span data-icon="spark"></span></span>
+            <div>
+              <span class="art-kicker">VOUS AVEZ UNE QUESTION.</span>
+              <p>Où investir le prochain euro ?</p>
+            </div>
+          </div>
+          <div class="art-connection">
+            <i></i><span>EXPLORER AVEC GENIE</span><i></i>
+          </div>
+          <div class="art-insight">
+            <div class="art-insight-head">
+              <span data-icon="chart"></span><span>UNE RÉPONSE À EXAMINER.</span
+              ><span class="art-spark">✦</span>
+            </div>
+            <div class="art-bars" aria-hidden="true">
+              <i></i><i></i><i></i><i></i><i></i><i></i>
+            </div>
+            <div class="art-insight-foot">
+              <span>Comprendre les chiffres.</span
+              ><span>Vérifier les sources.</span>
+            </div>
+          </div>
+          <div class="art-decision">
+            <span data-icon="arrow-up"></span
+            ><span>Vous gardez le dernier mot.</span>
+          </div>
+          <span class="art-footnote"
+            >Illustration du parcours · aucune requête exécutée ici</span
+          >
+        </div>
+        <div class="hero-bottom">
+          <span><span data-icon="clock"></span> 09:45 — 11:45</span
+          ><span><span data-icon="pin"></span> AWS Office · STATION F</span
+          ><span
+            ><span data-icon="users"></span> Métier + technique, en binôme</span
+          ><span class="hero-bottom-last"
+            >DE LA QUESTION À LA DÉCISION <span data-icon="arrow"></span
+          ></span>
+        </div>
+      </section>
+
+      <section
+        class="mission-section"
+        id="missions"
+        aria-labelledby="missions-title"
+      >
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">01 / CHOISISSEZ VOTRE TERRAIN DE JEU</p>
+            <h2 id="missions-title">Quelle décision voulez-vous éclairer ?</h2>
+          </div>
+          <p>
+            Un seul parcours pour aller au fond des choses.<br />
+            Changez de mission à tout moment, vos notes restent séparées.
+          </p>
+        </div>
+        <div class="mission-grid" id="mission-cards"></div>
+      </section>
+
+      <div class="setup-banner">
+        <span class="setup-icon" data-icon="launch"></span>
+        <div>
+          <strong
+            >Votre première fois ici ? Préparez votre terrain de jeu.</strong
+          >
+          <p>
+            Le notebook installe les données et votre Genie Agent dans votre
+            propre Trial AWS.
+          </p>
+        </div>
+        <a href="trial.html" class="setup-link"
+          >Installer mon atelier <span data-icon="arrow"></span
+        ></a>
+      </div>
+
+      <section class="studio" id="studio" aria-label="Votre espace de travail">
+        <div class="studio-topbar">
+          <div class="studio-label">
+            <span class="studio-dot"></span> VOTRE STUDIO
+            <span class="studio-separator">/</span>
+            <label class="sr-only" for="track">Votre parcours</label
+            ><select id="track" aria-label="Votre parcours"></select>
+          </div>
+          <div class="studio-tools">
+            <span id="save-indicator">Brouillon local</span
+            ><button
+              class="quiet"
+              id="session-toggle"
+              aria-controls="settings"
+              aria-expanded="false"
+            >
+              <span class="session-dot" id="session-dot"></span
+              ><span id="session-label">Mes liens Databricks</span
+              ><span data-icon="settings"></span>
+            </button>
+          </div>
+        </div>
+        <details class="no-print session-settings" id="settings">
+          <summary>Liens de session et environnement</summary>
+          <div class="settings-intro">
+            <div>
+              <h3>Reliez votre atelier à Databricks.</h3>
+              <p>
+                Copiez les valeurs du reçu de votre notebook. Elles servent à
+                ouvrir vos espaces et à personnaliser les prompts ; elles ne
+                donnent aucun droit d’accès.
+              </p>
+            </div>
+            <span class="chip">Dans votre navigateur uniquement</span>
+          </div>
+          <div class="receipt-import">
+            <label for="session-receipt"
+              >Le plus simple : collez votre reçu d’installation.</label
+            >
+            <p>
+              Copiez le bloc JSON de « Mon reçu et mes liens ». Le studio en
+              extrait vos liens, sans importer vos identifiants personnels.
+            </p>
+            <textarea
+              id="session-receipt"
+              rows="3"
+              placeholder='{"workspace_url": "https://…", "catalog": "…", "schema": "…", "genie_url": "https://…"}'
+            ></textarea
+            ><button id="use-receipt">
+              Utiliser les liens du reçu <span data-icon="arrow"></span>
+            </button>
+            <p id="receipt-status" role="status"></p>
+          </div>
+          <details class="settings-manual" id="manual-settings">
+            <summary>Ou renseigner les liens manuellement</summary>
+            <div id="binding-fields"></div>
+          </details>
+          <div class="settings-bottom">
+            <button id="save-bindings" class="primary">
+              Utiliser cet environnement <span data-icon="arrow"></span>
+            </button>
+            <p id="binding-status" role="status"></p>
+          </div>
+        </details>
+        <div class="layout">
+          <aside class="journey">
+            <p class="eyebrow">DE L’IDÉE À L’ACTION</p>
+            <nav
+              class="steps"
+              aria-label="Étapes de votre parcours"
+              id="steps"
+            ></nav>
+            <div class="journey-progress">
+              <div>
+                <span id="progress-label">Étape 1 sur 6</span
+                ><span id="progress-percent">17 %</span>
+              </div>
+              <div class="progress-track"><span id="progress-fill"></span></div>
+              <p>Votre position dans le parcours</p>
+            </div>
+            <div class="journey-tip">
+              <span data-icon="spark"></span>
+              <p>
+                La meilleure réponse ?<br /><strong
+                  >Celle que vous pouvez expliquer.</strong
+                >
+              </p>
+            </div>
+            <button class="quiet help-button" id="open-help">
+              <span data-icon="help"></span> Un coup de main ?
+            </button>
+          </aside>
+          <main class="content" id="main" tabindex="-1"></main>
+          <aside
+            class="companion"
+            id="companion"
+            aria-label="Votre cap et vos livrables"
+          ></aside>
+        </div>
+      </section>
+      <div class="toolbar resource-toolbar">
+        <span>À emporter avec vous</span
+        ><a href="guide.html" class="button"
+          ><span data-icon="book"></span> Guide imprimable</a
+        ><a href="participant-kit.zip" class="button"
+          ><span data-icon="download"></span> Télécharger le kit</a
+        ><a href="docs/TROUBLESHOOTING.md" class="resource-help"
+          >Dépannage <span data-icon="external"></span
+        ></a>
+      </div>
+      <footer class="footer">
+        <div>
+          <strong>AWS × Databricks</strong
+          ><span>Un atelier pour mieux décider, ensemble.</span>
+        </div>
+        <p>
+          NovaFlow est une entreprise fictive. Données synthétiques au
+          17/11/2026.<br />Vos notes restent dans ce navigateur. Exportez votre
+          cahier avant de partir.
+        </p>
+        <span class="footer-edition">STATION F / ÉDITION 2026</span>
+      </footer>
+    </div>
+    <div
+      id="status"
+      class="status no-print"
+      role="status"
+      aria-live="polite"
+    ></div>
+    <dialog id="help-dialog" class="help-dialog" aria-labelledby="help-title">
+      <button
+        class="dialog-close quiet"
+        data-close-dialog
+        aria-label="Fermer l’aide"
+      >
+        ×
+      </button>
+      <p class="eyebrow">ON AVANCE ENSEMBLE</p>
+      <h2 id="help-title">Chaque blocage a<br />une prochaine étape.</h2>
+      <div class="help-options">
+        <a href="trial.html#installation"
+          ><span data-icon="launch"></span>
+          <div>
+            <strong>Je dois préparer mon Trial</strong
+            ><span>Compte, notebook et installation des données</span>
+          </div>
+          <span data-icon="arrow"></span></a
+        ><button id="help-session">
+          <span data-icon="settings"></span
+          ><span
+            ><strong>Je cherche mes liens</strong
+            ><span>Utilisez le reçu de votre notebook</span></span
+          ><span data-icon="arrow"></span></button
+        ><a href="docs/TROUBLESHOOTING.md"
+          ><span data-icon="help"></span>
+          <div>
+            <strong>Genie ou le notebook bloque</strong
+            ><span>Solutions aux erreurs fréquentes</span>
+          </div>
+          <span data-icon="arrow"></span></a
+        ><a href="docs/APP_BUILDER.md"
+          ><span data-icon="grid"></span>
+          <div>
+            <strong>App Builder est indisponible</strong
+            ><span>Continuez l’enquête avec Genie</span>
+          </div>
+          <span data-icon="arrow"></span
+        ></a>
+      </div>
+      <p class="muted">
+        Le facilitateur peut vous aider à vérifier votre environnement et vos
+        droits.
+      </p>
+    </dialog>
+    <dialog
+      id="presentation-dialog"
+      class="presentation-dialog"
+      aria-label="Présentation de votre décision"
+    >
+      <button
+        class="dialog-close quiet"
+        data-close-dialog
+        aria-label="Fermer la présentation"
+      >
+        ×
+      </button>
+      <div id="presentation-content"></div>
+    </dialog>
+    <script id="workshop-data" type="application/json">
+      __DATA__
+    </script>
+    <script src="assets/portal.js"></script>
+  </body>
+</html>

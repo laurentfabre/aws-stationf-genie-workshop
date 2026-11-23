@@ -35,7 +35,7 @@ def build():
     files = {name: (SITE/name).read_bytes() for name in sorted(FILES)}
     # An extracted archive already is the kit; avoid a broken/self-recursive ZIP link.
     files['index.html'] = files['index.html'].replace(
-        b'href="participant-kit.zip" class="button">', b'href="README.md" class="button">')
+        b'href="participant-kit.zip"', b'href="README.md"')
     manifest = {name: hashlib.sha256(data).hexdigest() for name, data in files.items()}
     files['package-manifest.json'] = (json.dumps(manifest, indent=2)+'\n').encode()
     dist = ROOT/'dist'

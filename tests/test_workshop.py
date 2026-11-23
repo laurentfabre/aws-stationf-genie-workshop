@@ -398,7 +398,7 @@ class DistributionTests(unittest.TestCase):
                 self.assertNotIn('research',Path(name).parts)
                 if name != 'data/workshop.sqlite':
                     expected=(ROOT/'site'/name).read_bytes()
-                    if name=='index.html': expected=expected.replace(b'href="participant-kit.zip" class="button">',b'href="README.md" class="button">')
+                    if name=='index.html': expected=expected.replace(b'href="participant-kit.zip"',b'href="README.md"')
                     self.assertEqual(archive.read(name),expected,f'Stale archive member: {name}')
             self.assertIn('notebooks/00_START_HERE.ipynb',manifest)
             self.assertIn('docs/TRIAL_SETUP.md',manifest)

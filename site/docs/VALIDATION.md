@@ -1,13 +1,25 @@
 # Validation de cette édition
 
-Dataset : **stationf-synthetic-v1**, snapshot **17 novembre 2026**. Version distribuée : **v1.0.1**. Vérifications du **21 novembre 2026**.
+Dataset : **stationf-synthetic-v1**, snapshot **17 novembre 2026**. Version distribuée : **v1.1.0**. Interface vérifiée le **23 novembre 2026** ; répétition Databricks du **21 novembre 2026**.
 
 | Niveau | Statut | Portée |
 |---|---|---|
-| Supports | **PASS — vérifications locales** | 33 tests Python, 48 contrôles navigateur, 5 contrôles du ZIP extrait |
+| Supports | **PASS — vérifications locales** | 33 tests Python, 48 contrôles navigateur de régression, 86 contrôles du studio, 5 contrôles du ZIP extrait |
 | Répétition FEVM sur AWS | **PASS — périmètre ci-dessous** | Installation neuve, relance, Spark, warehouse et quatre questions Genie |
 | Vrai Trial participant | **NOT RUN** | Provisionnement, région, crédits, droits et capacités à vérifier dans chaque Trial |
 | Builder et seconde identité | **NOT RUN** | Génération d’application et contrôles d’accès distincts |
+
+## Studio participant v1.1.0 — 23 novembre
+
+- Quatre missions sélectionnables au clavier, six étapes, détails SQL et prompts à la demande, conservation des notes par environnement et parcours.
+- Import du reçu JSON : validation des liens et du namespace, conservation des seuls paramètres utiles, rejet du JSON invalide et suppression des anciens liens Genie lors d’un changement de namespace.
+- Graphiques construits à partir des références canoniques du kit : valeurs primaires et secondaires comparées aux fichiers JSON, axes partant de zéro, NULL affiché « Non calculable », source et caractère hors ligne visibles.
+- Mode présentation alimenté par les notes réelles du binôme ; fenêtre modale, fermeture Échap et restitution du focus vérifiées. Export JSON conserve les anciens et nouveaux environnements.
+- Six largeurs de 320 à 1920 pixels, chacune sur les six étapes : absence de débordement horizontal de page. Tableaux et navigation possèdent leur propre défilement.
+- 14 scans axe avec les tags WCAG A/AA et WCAG 2.1 AA, incluant les dialogues, les références, le studio mobile et l’installation Trial : aucune violation détectée. Les contrôles automatisés sont complétés par une inspection visuelle desktop/mobile, le clavier et le mode de mouvement réduit.
+- Portail, références et navigation vérifiés depuis `file://`. Aucune dépendance JavaScript, police, requête métier ou ressource externe nécessaire pour afficher le kit hors ligne.
+
+Le notebook distribué conserve exactement l’empreinte de la répétition FEVM ci-dessous. La refonte du studio ne modifie ni l’installation Databricks, ni les règles métier, ni les données. Le mode présentation et les graphiques locaux ne constituent pas des tests de réponses Genie live.
 
 ## Répétition FEVM du 21 novembre
 
@@ -35,7 +47,7 @@ Les reçus complets, identités, IDs de runs, conversations et statements sont c
 
 Les 33 tests Python vérifient les références SQL avec SQLite, les clés et jointures, les valeurs manquantes, les seuils métier, le contenu embarqué dans le notebook et l’absence de sorties enregistrées. Les services Spark/SDK simulés couvrent création, relance, collisions, pagination Genie, SDK sans facade Genie et erreurs. Ces tests locaux n’exécutent pas Spark ou l’API Databricks ; la répétition ci-dessus les complète.
 
-Les 48 contrôles Chrome headless portent sur les quatre parcours, les téléchargements, les prompts, les notes locales, exports/imports, l’affichage mobile et le PDF. Les 5 contrôles du ZIP réellement extrait couvrent son ouverture hors ligne, les liens, le guide Trial et le notebook importable. Une case du cahier participant n’exécute aucun test.
+Les 86 contrôles du nouveau studio complètent les régressions existantes. Les 48 contrôles Chrome headless portent sur les quatre parcours, les téléchargements, les prompts, les notes locales, exports/imports, l’affichage mobile et le PDF. Les 5 contrôles du ZIP réellement extrait couvrent son ouverture hors ligne, les liens, le guide Trial et le notebook importable. Une case du cahier participant n’exécute aucun test.
 
 L’archive contient **43 fichiers** contrôlés par SHA-256. Le notebook distribué ne contient aucune sortie enregistrée. Les sources et reçus internes restent hors du dépôt ; les bindings distribués sont vides. Python 3.11+ suffit aux tests locaux.
 

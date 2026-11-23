@@ -4,9 +4,19 @@
 
 Installez votre atelier dans un **Databricks Trial sur AWS**, puis travaillez en binôme sur une décision Sales & Marketing. Les données de NovaFlow sont entièrement synthétiques. Le notebook contient les données, les contrôles et la création d’un Genie Agent : aucun logiciel local, clé AWS ou token à copier.
 
+**[Ouvrir le studio des décisions](https://laurentfabre.github.io/aws-stationf-genie-workshop/)**
+
 **[Télécharger le kit participant complet](https://github.com/laurentfabre/aws-stationf-genie-workshop/releases/latest/download/stationf-genie-participants-2026-11-24.zip)** · **[Notebook seul](https://github.com/laurentfabre/aws-stationf-genie-workshop/releases/latest/download/00_START_HERE.ipynb)** · **[Guide PDF](https://github.com/laurentfabre/aws-stationf-genie-workshop/releases/latest/download/guide.pdf)**
 
 Les téléchargements sont publics, sans compte GitHub. Extrayez le ZIP, ouvrez `index.html` pour les consignes et importez `notebooks/00_START_HERE.ipynb` dans **votre propre Trial**. Les données, requêtes, parcours et fichiers nécessaires sont inclus ; aucun accès à l’environnement du facilitateur n’est requis.
+
+## Votre studio des décisions
+
+La version **v1.1.0** propose quatre missions visuelles, un parcours guidé en six étapes et un cahier personnel. Copiez vos questions vers Genie, examinez les références dans des graphiques interactifs, puis présentez votre recommandation en plein écran avec vos propres preuves et votre prochaine action. Les détails SQL et les prompts complets restent disponibles à la demande.
+
+Dans **Mes liens Databricks**, collez le JSON du reçu de votre notebook : seuls les liens et paramètres utiles sont conservés. Le studio ne lance aucune requête et ne simule aucune réponse Genie. Les graphiques sont explicitement les références hors ligne du jeu d’essai. L’illustration d’accueil n’est pas un résultat live.
+
+Le studio fonctionne aussi depuis le ZIP extrait, sans installation locale ni dépendance distante. Les notes restent propres au navigateur, à l’origine, à l’environnement et au parcours : exportez JSON avant de passer du site web au kit hors ligne, puis restaurez-le avec les mêmes liens de session. Markdown et le mode présentation mettent votre décision en forme, sans envoi automatique.
 
 ## Démarrer le jour J
 

@@ -18,3 +18,35 @@ jobs:
         run: python3 -m unittest discover -s tests -v
       - name: Check generated text is current
         run: git diff --exit-code -- notebooks/ data/bundle.json site/ ':!site/data/workshop.sqlite'
+  browser-experience:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Start participant site
+        run: python3 -m http.server 18770 --bind 127.0.0.1 --directory site > /tmp/workshop-server.log 2>&1 &
+      - name: Verify workshop and business-user experience
+        env:
+          PLAYWRIGHT_CHANNEL: chromium
+        run: |
+          npm run test:browser
+          npm run test:experience
+          python3 scripts/package.py
+          python3 -c "import zipfile; zipfile.ZipFile('site/participant-kit.zip').extractall('.validation/extracted')"
+          npm run test:archive
+          python3 -m unittest discover -s tests -v
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: participant-experience-evidence
+          path: |
+            .validation/*.json
+            .validation/*.png
