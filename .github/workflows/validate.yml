@@ -39,6 +39,7 @@ jobs:
         run: |
           npm run test:browser
           npm run test:experience
+          npm run test:participants
           python3 scripts/package.py
           python3 -c "import zipfile; zipfile.ZipFile('site/participant-kit.zip').extractall('.validation/extracted')"
           npm run test:archive

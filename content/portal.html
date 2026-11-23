@@ -9,7 +9,7 @@
       content="Votre atelier AWS × Databricks à STATION F. Choisissez une mission, explorez avec Genie et transformez vos découvertes en décision."
     />
     <title>STATION F · Le studio des décisions · Atelier Genie</title>
-    <link rel="stylesheet" href="assets/portal.css" />
+    <link rel="stylesheet" href="assets/portal.css?v=1.2.0" />
     <link
       rel="icon"
       href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22%3E%3Crect width=%2240%22 height=%2240%22 rx=%229%22 fill=%22%23102c32%22/%3E%3Cpath d=%22m20 7 4 9 9 4-9 4-4 9-4-9-9-4 9-4Z%22 fill=%22%23e8c6a0%22/%3E%3C/svg%3E"
@@ -33,6 +33,14 @@
         >STATION F <span>PARIS / 24.11.2026</span></span
       >
       <div class="header-actions">
+        <button
+          class="participant-switch quiet"
+          id="open-participant"
+          aria-haspopup="dialog"
+        >
+          <span class="participant-avatar" id="participant-avatar">?</span
+          ><span id="participant-name">Mon parcours</span>
+        </button>
         <button class="quiet" id="open-workbook">
           <span data-icon="notebook"></span><span>Mon cahier</span
           ><span class="note-counter" id="header-note-count">0</span></button
@@ -173,6 +181,12 @@
             </button>
           </div>
         </div>
+        <section
+          class="participant-thread"
+          id="participant-thread"
+          aria-label="Mon fil rouge personnel"
+          tabindex="-1"
+        ></section>
         <details class="no-print session-settings" id="settings">
           <summary>Liens de session et environnement</summary>
           <div class="settings-intro">
@@ -218,18 +232,14 @@
         <div class="layout">
           <aside class="journey">
             <p class="eyebrow">DE L’IDÉE À L’ACTION</p>
-            <nav
-              class="steps"
-              aria-label="Étapes de votre parcours"
-              id="steps"
-            ></nav>
+
             <div class="journey-progress">
               <div>
                 <span id="progress-label">Étape 1 sur 6</span
                 ><span id="progress-percent">17 %</span>
               </div>
               <div class="progress-track"><span id="progress-fill"></span></div>
-              <p>Votre position dans le parcours</p>
+              <p>Jalons déclarés par vous</p>
             </div>
             <div class="journey-tip">
               <span data-icon="spark"></span>
@@ -339,9 +349,75 @@
       </button>
       <div id="presentation-content"></div>
     </dialog>
+    <aside
+      id="participant-dock"
+      class="participant-dock"
+      aria-label="Rappel du parcours personnel"
+    ></aside>
+    <dialog
+      id="participant-dialog"
+      class="help-dialog participant-dialog"
+      aria-labelledby="participant-dialog-title"
+    >
+      <button
+        class="dialog-close quiet"
+        data-close-dialog
+        aria-label="Fermer mon profil"
+      >
+        ×
+      </button>
+      <p class="eyebrow">UN FIL ROUGE QUI VOUS RESSEMBLE</p>
+      <h2 id="participant-dialog-title">
+        Votre mission.<br />Votre rythme. Votre progression.
+      </h2>
+      <p class="participant-local-note">
+        Chaque profil conserve ses propres notes, liens et statuts dans ce
+        navigateur. Aucun compte n’est créé et aucun suivi n’est transmis au
+        facilitateur.
+      </p>
+      <label class="field"
+        ><span>Participant actif</span
+        ><select id="participant-select"></select
+      ></label>
+      <label class="field"
+        ><span>Prénom ou nom du binôme</span
+        ><input
+          id="participant-edit-name"
+          maxlength="60"
+          placeholder="Ex. Camille ou Équipe Horizon"
+          autocomplete="off"
+      /></label>
+      <label class="field"
+        ><span>Votre rôle dans l’atelier</span
+        ><select id="participant-role">
+          <option value="business">Je porte la décision métier</option>
+          <option value="technical">Je vérifie les données et le SQL</option>
+          <option value="pair">Nous travaillons en binôme</option>
+        </select></label
+      >
+      <button class="primary" id="save-participant">
+        Enregistrer mon profil <span data-icon="arrow"></span>
+      </button>
+      <details>
+        <summary>Une autre personne utilise ce navigateur ?</summary>
+        <p class="participant-local-note">
+          Créez un profil séparé pour conserver ses notes et sa progression sans
+          les mélanger aux vôtres.
+        </p>
+        <label class="field"
+          ><span>Nom du nouveau participant</span
+          ><input
+            id="new-participant-name"
+            maxlength="60"
+            placeholder="Ex. Alex"
+            autocomplete="off" /></label
+        ><button id="create-participant">Créer un parcours séparé</button>
+      </details>
+      <p id="participant-feedback" role="status"></p>
+    </dialog>
     <script id="workshop-data" type="application/json">
       __DATA__
     </script>
-    <script src="assets/portal.js"></script>
+    <script src="assets/portal.js?v=1.2.0"></script>
   </body>
 </html>

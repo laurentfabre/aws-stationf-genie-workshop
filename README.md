@@ -18,6 +18,14 @@ Dans **Mes liens Databricks**, collez le JSON du reçu de votre notebook : seuls
 
 Le studio fonctionne aussi depuis le ZIP extrait, sans installation locale ni dépendance distante. Les notes restent propres au navigateur, à l’origine, à l’environnement et au parcours : exportez JSON avant de passer du site web au kit hors ligne, puis restaurez-le avec les mêmes liens de session. Markdown et le mode présentation mettent votre décision en forme, sans envoi automatique.
 
+## Un fil rouge pour chaque participant
+
+Avec **v1.2.0**, personnalisez votre profil avec votre prénom ou nom de binôme et votre rôle. Votre fil rouge affiche les six jalons, leur statut, votre prochaine action et un accès à votre checkpoint. Un rappel compact reste visible pendant que vous travaillez.
+
+Les statuts **À faire**, **En cours**, **Terminé** et **Besoin d’aide** sont vos déclarations personnelles. Pour terminer un jalon, renseignez son livrable puis confirmez-le ; visiter la dernière étape ne termine pas le parcours. Si Builder manque, marquez-le **Indisponible** et poursuivez l’enquête Genie. Décrivez un blocage pour le montrer au facilitateur : aucun message ne lui est envoyé automatiquement.
+
+Les profils d’un même navigateur possèdent leurs propres notes, liens, mission et progression. JSON sauvegarde tous ces profils et statuts ; Markdown partage le participant et le parcours actifs. Les anciens brouillons et exports v1 restent lisibles. Le suivi reste local à votre navigateur et ne vérifie pas automatiquement vos opérations dans Databricks.
+
 ## Démarrer le jour J
 
 1. Ouvrez votre [Trial Databricks](https://www.databricks.com/try-databricks). Le parcours **Express signup** crée un workspace serverless sans fournir d’identifiants AWS. Préparez le compte avant l’atelier ; l’installation reste rejouable le jour J. [Guide détaillé](docs/TRIAL_SETUP.md).

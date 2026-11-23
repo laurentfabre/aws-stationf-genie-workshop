@@ -1,6 +1,6 @@
 # Validation de cette édition
 
-Dataset : **stationf-synthetic-v1**, snapshot **17 novembre 2026**. Version distribuée : **v1.1.0**. Interface vérifiée le **23 novembre 2026** ; répétition Databricks du **21 novembre 2026**.
+Dataset : **stationf-synthetic-v1**, snapshot **17 novembre 2026**. Version distribuée : **v1.2.0**. Interface vérifiée le **23 novembre 2026** ; répétition Databricks du **21 novembre 2026**.
 
 | Niveau | Statut | Portée |
 |---|---|---|
@@ -8,6 +8,19 @@ Dataset : **stationf-synthetic-v1**, snapshot **17 novembre 2026**. Version dist
 | Répétition FEVM sur AWS | **PASS — périmètre ci-dessous** | Installation neuve, relance, Spark, warehouse et quatre questions Genie |
 | Vrai Trial participant | **NOT RUN** | Provisionnement, région, crédits, droits et capacités à vérifier dans chaque Trial |
 | Builder et seconde identité | **NOT RUN** | Génération d’application et contrôles d’accès distincts |
+
+## Fil rouge personnel v1.2.0 — 23 novembre
+
+33 contrôles navigateur dédiés et 5 scans axe supplémentaires vérifient :
+
+- Profil nommé et rôle d’atelier ; séparation des notes, liens et statuts entre deux participants du même navigateur.
+- Six jalons et prochaine action explicite ; visite d’une étape distincte de sa déclaration de fin. Les livrables nécessaires doivent être renseignés pour déclarer une étape terminée.
+- Réouverture d’un jalon quand une note requise est effacée ; blocage prioritaire dans la prochaine action ; indisponibilité Builder distincte d’une application réussie.
+- Conservation des statuts et blocages après rechargement ; rappel du fil rouge accessible pendant le défilement ; interface sans débordement horizontal aux quatre largeurs de contrôle.
+- Export JSON v2 avec profils et statuts, réimport dans un autre navigateur, isolation des profils restaurés, import invalide rejeté sans modification partielle ; migration des anciens brouillons v1 sans jalon terminé automatiquement.
+- Markdown avec profil actif, statuts et limites ; présentation utilisant la décision réelle.
+
+Ces statuts sont déclarés par le participant et stockés localement. Une fin de parcours déclarée ne constitue pas une preuve d’exécution Databricks ; un blocage affiché n’envoie aucune notification au facilitateur. Les 5 scans supplémentaires couvrent le profil, le fil rouge bloqué et terminé, le rappel flottant et le blocage mobile, sans violation détectée.
 
 ## Studio participant v1.1.0 — 23 novembre
 

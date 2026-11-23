@@ -17,6 +17,7 @@ python3 -m http.server 18770 --directory site
 # Dans un second terminal, depuis la racine du dépôt :
 npm run test:browser
 npm run test:experience
+npm run test:participants
 python3 scripts/package.py
 python3 -c "import zipfile; zipfile.ZipFile('site/participant-kit.zip').extractall('.validation/extracted')"
 npm run test:archive
@@ -30,3 +31,5 @@ python3 -m unittest discover -s tests -v
 L’archive est construite à partir d’une liste explicite de fichiers. N’ajoutez jamais de recherche client, identifiants, exports de workspace ou sorties de notebook au dépôt public. Les tests ne se connectent pas à Databricks. Toute validation dans un Trial doit être consignée séparément avec l’environnement, l’identité, les IDs de requêtes et les limites.
 
 Le workflow de validation exécute les tests Python et les tests navigateur dans des jobs séparés. Les preuves navigateur utilisent seulement des comptes et URLs d’exemple. Le workflow Pages publie le dossier `site/` sous le site public du dépôt ; les documents source, recherches et reçus internes n’en font pas partie.
+
+`participant-check.mjs` ajoute 33 contrôles et 5 scans axe pour les profils locaux, jalons déclarés, blocages, reprise, migration v1 et import/export v2. Toute modification du stockage doit préserver les anciens brouillons et isoler les notes entre participants, environnements et parcours.

@@ -227,7 +227,7 @@ const FIELD_HINTS = {
   ],
 };
 let memory = {
-  version: 1,
+  version: 2,
   bindings: { ...W.bindings },
   notes: {},
   track: W.tracks[0].id,
@@ -236,10 +236,37 @@ let memory = {
 let storageOK = true;
 try {
   const old = JSON.parse(localStorage.getItem(storageKey) || "null");
-  if (old && old.version === 1 && old.notes && old.bindings)
+  if (old && [1, 2].includes(old.version) && old.notes && old.bindings)
     memory = { ...memory, ...old };
 } catch {
   storageOK = false;
+}
+memory.version = 2;
+if (
+  !memory.participants ||
+  typeof memory.participants !== "object" ||
+  Array.isArray(memory.participants)
+)
+  memory.participants = {};
+if (!Object.hasOwn(memory.participants, memory.activeParticipant || "")) {
+  const id = newParticipantId();
+  memory.participants[id] = {
+    id,
+    name: "",
+    role: "pair",
+    bindings: { ...memory.bindings },
+    track: memory.track,
+    step: memory.step,
+  };
+  memory.activeParticipant = id;
+}
+memory.journeys ||= {};
+// Existing v1 drafts belong to the initial participant; never infer completed stages from notes.
+for (const key of Object.keys(memory.notes)) {
+  if (!/^p_[a-z0-9]+::/.test(key)) {
+    memory.notes[memory.activeParticipant + "::" + key] = memory.notes[key];
+    delete memory.notes[key];
+  }
 }
 let trackId = W.tracks.some((t) => t.id === memory.track)
   ? memory.track
@@ -252,6 +279,8 @@ let chartMetric = "primary";
 let statusTimer;
 const track = () => W.tracks.find((t) => t.id === trackId);
 const scope = () =>
+  memory.activeParticipant +
+  "::" +
   [
     memory.bindings.workspace_url || "offline",
     memory.bindings.catalog || "",
@@ -263,6 +292,7 @@ const notes = () => memory.notes[scope()] || (memory.notes[scope()] = {});
 const countNotes = () =>
   W.workbook_fields.filter(([id]) => notes()[id]?.trim()).length;
 function status(message, bad = false) {
+  if (!storageOK && !bad) {message += " Stockage navigateur indisponible : exportez JSON avant de fermer.";bad = true;}
   const el = $("#status");
   clearTimeout(statusTimer);
   el.textContent = message;
@@ -274,6 +304,13 @@ function status(message, bad = false) {
 function persist() {
   memory.track = trackId;
   memory.step = step;
+  Object.assign(currentParticipant(), {
+    bindings: { ...memory.bindings },
+    track: trackId,
+    step,
+  });
+  journey().lastStep = step;
+  validateCompletedStages();
   try {
     localStorage.setItem(storageKey, JSON.stringify(memory));
     storageOK = true;
@@ -388,6 +425,11 @@ function updateNotebook() {
     $("#workbook-summary").textContent =
       `Mon cahier · ${count} notes rédigées sur 9`;
   if ($("#companion")) renderCompanion();
+  renderThread();
+  if ($("#phase-status")) {
+    $("#phase-status").value = journey().steps[step].status;
+    $("#blocker-area").hidden = journey().steps[step].status !== "blocked";
+  }
 }
 function openSettings() {
   const el = $("#settings");
@@ -412,7 +454,9 @@ function moveToStudio() {
 function selectTrack(id, fromCard = false) {
   saveFields();
   trackId = id;
-  if (fromCard) step = 0;
+  if (fromCard) step = journey().lastStep || 0;
+  if (journey().steps[step].status === "todo")
+    journey().steps[step].status = "in_progress";
   chartMetric = "primary";
   render();
   persist();
@@ -426,14 +470,7 @@ function render() {
     u = UI[trackId];
   $("#track").value = trackId;
   renderMissions();
-  $("#steps").innerHTML = STEP_LABELS.map(
-    (name, i) =>
-      `<button class="step" data-step="${i}" ${i === step ? 'aria-current="step"' : ""}><span class="n">${String(i + 1).padStart(2, "0")}</span><span>${esc(name)}<span class="step-time">${STEP_TIMES[i]}${i === 3 ? " · selon disponibilité" : ""}</span></span></button>`,
-  ).join("");
-  $("#progress-label").textContent = `Étape ${step + 1} sur 6`;
-  $("#progress-percent").textContent =
-    Math.round(((step + 1) / 6) * 100) + " %";
-  $("#progress-fill").style.width = ((step + 1) / 6) * 100 + "%";
+  renderThread();
   let html = `<p class="eyebrow">${icon(u.icon)} ${esc(u.tag)} <span>/</span> ÉTAPE 0${step + 1}</p>`;
   if (step === 0)
     html += `<h2>Une bonne décision commence<br>par une bonne question.</h2><p class="step-intro">Bienvenue chez NovaFlow, une entreprise SaaS fictive. Aujourd’hui, vous prenez les commandes de sa ${trackId === "marketing" ? "stratégie d’acquisition" : trackId === "activation" ? "revue commerciale" : trackId === "retention" ? "revue des renouvellements" : "revue du pipeline"}.</p><div class="mission-brief"><span class="brief-label">${icon("target")} Votre mission</span><p>${esc(t.decision)}</p><div class="brief-facts">${u.facts.map((f) => `<span>${esc(f)}</span>`).join("")}</div></div><div class="role-grid"><div class="role-card">${icon("message")}<strong>Vous portez la décision</strong><p>Formulez la question. Interprétez les résultats. Choisissez la prochaine action.</p><span>${esc(t.owner)}</span></div><div class="role-card">${icon("eye")}<strong>Votre binôme challenge la preuve</strong><p>Vérifiez les sources, le périmètre et les calculs. Signalez les limites.</p><span>Partenaire technique</span></div></div><div class="field-grid">${field("team", true)}${field("question", true)}</div><details><summary>Avant de commencer · votre checklist</summary><ol class="checklist"><li>Ouvrez le Genie Agent créé par votre notebook avec votre propre compte.</li><li>Demandez la liste des sources et vérifiez le catalogue et le schéma de votre reçu.</li><li>Reportez vos liens dans « Mes liens Databricks » pour ouvrir Genie en un clic.</li><li>Confirmez la disponibilité de Builder avec le facilitateur.</li></ol>${resourceLinks()}</details><details><summary>Le programme de vos deux heures</summary><table><tbody>${W.agenda.map((a) => `<tr><td>${a[0]}</td><td>${a[1]}</td><td>${a[2]}</td></tr>`).join("")}</tbody></table></details><p class="soft-note">${icon("info")}Ce studio vous guide et conserve vos notes. Les questions et les calculs s’exécutent dans votre Databricks, avec les données synthétiques du kit.</p>`;
@@ -446,10 +483,11 @@ function render() {
   if (step === 4)
     html += `<h2>Une belle réponse.<br>Et les preuves qui vont avec.</h2><p class="step-intro">Mettez votre résultat à l’épreuve. Comparez les mêmes données, les mêmes filtres et la même période, puis expliquez les écarts.</p><div id="reference-visual">${referenceVisual()}</div><h3>Vos cinq angles de vérification</h3>${checksTable(t)}${field("verification")}${field("observations")}<details><summary>Sources, accès et limites des références</summary><p>Ces chiffres sont les résultats attendus du jeu synthétique, calculés localement et répétés sur FEVM. Ils ne prouvent pas l’exécution dans votre propre Trial. Conservez votre conversation, le SQL, l’identité, la date et le résultat réellement observé.</p><p>Le propriétaire du Trial peut écrire dans ses tables. Un test de refus exige une seconde identité limitée préparée ; sinon, notez NOT RUN. Ne retirez pas les droits d’un participant pour fabriquer ce test.</p><p>Statuts : PASS, FAIL, BLOCKED, NOT RUN, NOT APPLICABLE avec motif. Une case du cahier ne lance aucun test.</p><p><a href="reference-results.json">Toutes les références</a> · <a href="sql/quality.sql">Qualité des données</a> · <a href="sql/empty.sql">Cas vide</a> · <a href="docs/VALIDATION.md">Périmètre des vérifications</a></p></details>`;
   if (step === 5)
-    html += `<h2>La prochaine action<br>vous appartient.</h2><p class="step-intro">Vous avez exploré, challengé et vérifié. Transformez maintenant votre travail en une recommandation que l’équipe peut comprendre en trois minutes.</p><div class="pitch-timing"><div><strong>30 s</strong><span>Le problème</span></div><div><strong>60 s</strong><span>Votre exploration</span></div><div><strong>60 s</strong><span>Preuve et limite</span></div><div><strong>30 s</strong><span>La suite</span></div></div>${field("decision")}${field("owner")}<div id="decision-preview">${decisionPreview()}</div><details class="export-panel" open><summary id="workbook-summary">Mon cahier · ${countNotes()} notes rédigées sur 9</summary><div class="actions"><button id="export-json" class="primary">${icon("download")} Sauvegarder JSON</button><button id="export-md">${icon("file")} Partager Markdown</button><button id="print-notes">${icon("book")} Imprimer</button><button id="import-button">${icon("notebook")} Restaurer JSON</button><input class="hidden" type="file" id="import-file" accept="application/json"></div><p class="muted">JSON conserve vos notes de tous les parcours et environnements. Markdown et impression partagent le parcours actif. Choisissez où partager vos liens et notes ; aucun envoi automatique.</p><details><summary>Relire toutes mes notes</summary>${W.workbook_fields
+    html += `<h2>La prochaine action<br>vous appartient.</h2><p class="step-intro">Rassemblez votre exploration, vos preuves et vos limites. Transformez votre travail en une recommandation que l’équipe peut comprendre en trois minutes.</p><div class="pitch-timing"><div><strong>30 s</strong><span>Le problème</span></div><div><strong>60 s</strong><span>Votre exploration</span></div><div><strong>60 s</strong><span>Preuve et limite</span></div><div><strong>30 s</strong><span>La suite</span></div></div>${field("decision")}${field("owner")}<div id="decision-preview">${decisionPreview()}</div><details class="export-panel" open><summary id="workbook-summary">Mon cahier · ${countNotes()} notes rédigées sur 9</summary><div class="actions"><button id="export-json" class="primary">${icon("download")} Sauvegarder JSON</button><button id="export-md">${icon("file")} Partager Markdown</button><button id="print-notes">${icon("book")} Imprimer</button><button id="import-button">${icon("notebook")} Restaurer JSON</button><input class="hidden" type="file" id="import-file" accept="application/json"></div><p class="muted">JSON conserve tous les profils, leurs statuts et leurs notes de ce navigateur. Markdown et impression partagent le parcours actif. Choisissez où partager vos liens et notes ; aucun envoi automatique.</p><details><summary>Relire toutes mes notes</summary>${W.workbook_fields
       .filter(([id]) => !["decision", "owner"].includes(id))
       .map(([id]) => field(id))
       .join("")}</details></details>`;
+  html += checkpointPanel();
   html += `<div class="next"><button data-next="-1" ${step === 0 ? "disabled" : ""}>${icon("back")} Précédent</button>${step < 5 ? `<span class="next-hint">PROCHAINE ÉTAPE · ${STEP_LABELS[step + 1].toUpperCase()}</span><button class="primary" data-next="1">${step === 0 ? "Commencer l’exploration" : step === 4 ? "Préparer ma décision" : "Continuer"} ${icon("arrow")}</button>` : `<button class="primary" id="present-bottom">${icon("present")} Présenter ma décision</button>`}</div>`;
   $("#main").innerHTML = html;
   $("#main")
@@ -478,6 +516,7 @@ function render() {
     .querySelectorAll("[data-configure]")
     .forEach((el) => (el.onclick = openSettings));
   bindChart();
+  bindCheckpoint();
   updateNotebook();
   if (step === 5) {
     $("#export-json").onclick = () => exportJSON();
@@ -495,6 +534,10 @@ function render() {
 function go(n) {
   saveFields();
   step = Math.max(0, Math.min(5, n));
+  if (journey().steps[step].status === "todo") {
+    journey().steps[step].status = "in_progress";
+    journey().steps[step].at = new Date().toISOString();
+  }
   render();
   persist();
   $("#main").focus({ preventScroll: true });
@@ -583,7 +626,7 @@ function present() {
     return;
   }
   $("#presentation-content").innerHTML =
-    `<p class="eyebrow">AWS × DATABRICKS / STATION F / 24 NOVEMBRE 2026</p><h2>${esc(UI[trackId].title)}</h2><blockquote>${esc(notes().decision)}</blockquote><div class="presentation-columns"><div><strong>Notre preuve et nos limites</strong><p>${esc(notes().verification?.trim() || notes().findings?.trim() || "Preuves et limites à compléter dans le cahier.")}</p></div><div><strong>Notre prochaine action</strong><p>${esc(notes().owner?.trim() || "Responsable et échéance à préciser.")}</p></div></div><div class="presentation-footer"><span>${esc(notes().team?.trim() || "Votre équipe")}</span><span>NovaFlow · Données synthétiques au 17/11/2026</span></div>`;
+    `<p class="eyebrow">AWS × DATABRICKS / STATION F / 24 NOVEMBRE 2026</p><h2>${esc(UI[trackId].title)}</h2><blockquote>${esc(notes().decision)}</blockquote><div class="presentation-columns"><div><strong>Notre preuve et nos limites</strong><p>${esc(notes().verification?.trim() || notes().findings?.trim() || "Preuves et limites à compléter dans le cahier.")}</p></div><div><strong>Notre prochaine action</strong><p>${esc(notes().owner?.trim() || "Responsable et échéance à préciser.")}</p></div></div><div class="presentation-footer"><span>${esc(notes().team?.trim() || currentParticipant().name || "Votre équipe")}</span><span>NovaFlow · Données synthétiques au 17/11/2026</span></div>`;
   $("#presentation-dialog").showModal();
 }
 // The preview is replaced while typing; delegation keeps its presentation button active.
@@ -593,6 +636,8 @@ $("#main").addEventListener("click", (event) => {
 function markdown() {
   return (
     `# Cahier STATION F — ${track().title}\n\nDataset : ${W.dataset}\nEnvironnement : ${memory.bindings.workspace_url || "local / non configuré"}\n\n` +
+    journeyMarkdown() +
+    journeyMarkdown() +
     W.workbook_fields
       .map(
         ([id, label]) => `## ${label}\n\n${notes()[id] || "Non renseigné"}\n`,
@@ -619,7 +664,7 @@ function exportJSON() {
     "application/json",
   );
   status(
-    "Votre sauvegarde JSON contient toutes vos notes. Conservez-la pour les retrouver ailleurs.",
+    "Votre sauvegarde JSON contient les profils, statuts et notes de ce navigateur. Choisissez où la conserver.",
   );
 }
 function printNotes() {
@@ -638,40 +683,164 @@ function printNotes() {
   pop.print();
 }
 async function restore(event) {
-  const f = event.target.files[0];
-  if (!f) return;
+  const file = event.target.files[0];
+  if (!file) return;
   try {
-    if (f.size > 2e6) throw Error("Fichier trop volumineux");
-    const data = JSON.parse(await f.text());
+    if (file.size > 2e6) throw Error("Fichier trop volumineux");
+    const data = JSON.parse(await file.text());
     if (
-      data.version !== 1 ||
+      ![1, 2].includes(data.version) ||
       !data.notes ||
       typeof data.notes !== "object" ||
       Array.isArray(data.notes)
     )
       throw Error("Format de cahier inconnu");
-    const clean = {};
-    for (const [key, value] of Object.entries(data.notes)) {
+    const profiles = {},
+      cleanNotes = {},
+      cleanJourneys = {};
+    if (data.version === 2) {
       if (
-        ["__proto__", "constructor", "prototype"].includes(key) ||
-        typeof value !== "object" ||
-        !value ||
-        Array.isArray(value)
+        !data.participants ||
+        typeof data.participants !== "object" ||
+        Array.isArray(data.participants)
       )
+        throw Error("Profils manquants");
+      for (const [id, person] of Object.entries(data.participants)) {
+        if (
+          !/^p_[a-z0-9]{6,80}$/.test(id) ||
+          !person ||
+          typeof person.name !== "string" ||
+          person.name.length > 60 ||
+          !Object.hasOwn(ROLE_LABELS, person.role)
+        )
+          throw Error("Profil invalide");
+        const bindings = { ...W.bindings };
+        for (const key of [
+          "workspace_url",
+          "catalog",
+          "schema",
+          "warehouse_id",
+          "genie_url",
+          "app_space_url",
+        ]) {
+          const value = person.bindings?.[key] ?? "";
+          if (
+            typeof value !== "string" ||
+            (value && key.endsWith("_url") && !safeLink(value)) ||
+            (value &&
+              ["catalog", "schema"].includes(key) &&
+              !/^[A-Za-z_][A-Za-z0-9_]*$/.test(value))
+          )
+            throw Error("Liens de profil invalides");
+          bindings[key] = value;
+        }
+        profiles[id] = {
+          id,
+          name: person.name,
+          role: person.role,
+          bindings,
+          track: W.tracks.some((t) => t.id === person.track)
+            ? person.track
+            : W.tracks[0].id,
+          step:
+            Number.isInteger(person.step) && person.step >= 0 && person.step < 6
+              ? person.step
+              : 0,
+        };
+      }
+    }
+    function importedScope(key) {
+      if (["__proto__", "constructor", "prototype"].includes(key))
+        throw Error("Environnement invalide");
+      if (data.version === 1) return memory.activeParticipant + "::" + key;
+      const id = key.split("::")[0];
+      if (
+        !/^p_[a-z0-9]{6,80}$/.test(id) ||
+        (!Object.hasOwn(profiles, id) &&
+          !Object.hasOwn(memory.participants, id))
+      )
+        throw Error("Participant inconnu dans le cahier");
+      return key;
+    }
+    for (const [key, value] of Object.entries(data.notes)) {
+      if (!value || typeof value !== "object" || Array.isArray(value))
         throw Error("Notes invalides");
-      clean[key] = {};
+      const target = importedScope(key);
+      cleanNotes[target] = {};
       for (const [id] of W.workbook_fields) {
         if (value[id] !== undefined && typeof value[id] !== "string")
           throw Error("Note invalide");
-        if (value[id] !== undefined) clean[key][id] = value[id];
+        if (value[id] !== undefined) cleanNotes[target][id] = value[id];
       }
     }
-    for (const [key, value] of Object.entries(clean))
+    if (data.version === 2 && data.journeys !== undefined) {
+      if (
+        !data.journeys ||
+        typeof data.journeys !== "object" ||
+        Array.isArray(data.journeys)
+      )
+        throw Error("Progression invalide");
+      for (const [key, value] of Object.entries(data.journeys)) {
+        const target = importedScope(key);
+        if (!value || !Array.isArray(value.steps) || value.steps.length !== 6)
+          throw Error("Jalons invalides");
+        const mergedNotes = {
+          ...(memory.notes[target] || {}),
+          ...(cleanNotes[target] || {}),
+        };
+        const steps = value.steps.map((phase, index) => {
+          if (
+            !phase ||
+            !Object.hasOwn(PHASE_STATES, phase.status) ||
+            (phase.status === "unavailable" && index !== 3) ||
+            typeof phase.reason !== "string" ||
+            phase.reason.length > 500 ||
+            typeof phase.at !== "string" ||
+            (phase.at && !Number.isFinite(Date.parse(phase.at)))
+          )
+            throw Error("Statut de jalon invalide");
+          return {
+            status:
+              phase.status === "done" &&
+              PHASE_FIELDS[index].some((id) => !mergedNotes[id]?.trim())
+                ? "in_progress"
+                : phase.status,
+            at: phase.at,
+            reason: phase.reason,
+          };
+        });
+        cleanJourneys[target] = {
+          steps,
+          lastStep:
+            Number.isInteger(value.lastStep) &&
+            value.lastStep >= 0 &&
+            value.lastStep < 6
+              ? value.lastStep
+              : 0,
+        };
+      }
+    }
+    saveFields();
+    for (const [id, person] of Object.entries(profiles))
+      if (!Object.hasOwn(memory.participants, id))
+        memory.participants[id] = person;
+    for (const [key, value] of Object.entries(cleanNotes))
       memory.notes[key] = { ...(memory.notes[key] || {}), ...value };
+    for (const [key, value] of Object.entries(cleanJourneys)) {
+      const previous = memory.journeys[key];
+      memory.journeys[key] = {
+        ...value,
+        steps: value.steps.map((phase, index) =>
+          previous?.steps[index]?.at > phase.at ? previous.steps[index] : phase,
+        ),
+      };
+    }
     persist();
     render();
     status(
-      "Cahier restauré. Vos liens actuels sont conservés ; chaque note reste associée à son environnement.",
+      data.version === 1
+        ? "Ancien cahier restauré dans votre profil. Aucun jalon n’a été déclaré terminé automatiquement."
+        : "Cahier restauré : profils, notes et statuts sont disponibles. Votre participant actif et ses liens actuels sont conservés.",
     );
   } catch (error) {
     status("Import refusé : " + error.message, true);
@@ -981,6 +1150,329 @@ $("#settings").addEventListener("toggle", () =>
     String($("#settings").open),
   ),
 );
+const PHASE_STATES = {
+  todo: { label: "À faire", icon: "clock" },
+  in_progress: { label: "En cours", icon: "spark" },
+  done: { label: "Terminé", icon: "check" },
+  blocked: { label: "Besoin d’aide", icon: "help" },
+  unavailable: { label: "Indisponible", icon: "info" },
+};
+const PHASE_FIELDS = [
+  ["question"],
+  ["conversation", "findings"],
+  ["findings"],
+  ["observations", "app"],
+  ["verification"],
+  ["decision", "owner"],
+];
+const PHASE_ACTIONS = [
+  "Formulez votre question métier et répartissez les rôles.",
+  "Posez une question dans Genie, puis conservez la conversation et vos observations.",
+  "Accordez-vous sur les définitions, le périmètre et la limite de votre analyse.",
+  "Construisez un aperçu puis améliorez-le, ou indiquez que Builder est indisponible.",
+  "Comparez votre résultat aux références et consignez la preuve réellement observée.",
+  "Rédigez votre décision, sa limite et la prochaine action avec un responsable et une date.",
+];
+const ROLE_LABELS = {
+  business: "Métier",
+  technical: "Technique",
+  pair: "Binôme",
+};
+function newParticipantId() {
+  return (
+    "p_" +
+    (globalThis.crypto?.randomUUID?.().replaceAll("-", "") ||
+      Date.now().toString(36) + Math.random().toString(36).slice(2))
+  );
+}
+function currentParticipant() {
+  return memory.participants[memory.activeParticipant];
+}
+function journey() {
+  const key = scope();
+  if (!memory.journeys[key])
+    memory.journeys[key] = {
+      steps: Array.from({ length: 6 }, () => ({
+        status: "todo",
+        at: "",
+        reason: "",
+      })),
+      lastStep: 0,
+    };
+  return memory.journeys[key];
+}
+function completion() {
+  const phases = journey().steps;
+  const total = 6 - (phases[3].status === "unavailable" ? 1 : 0);
+  const done = phases.filter((p) => p.status === "done").length;
+  const blocked = phases.findIndex((p) => p.status === "blocked");
+  const next =
+    blocked >= 0
+      ? blocked
+      : phases.findIndex((p) => !["done", "unavailable"].includes(p.status));
+  return { total, done, blocked, next, complete: next < 0 };
+}
+function missingFields(index) {
+  return PHASE_FIELDS[index].filter((id) => !notes()[id]?.trim());
+}
+function validateCompletedStages() {
+  journey().steps.forEach((phase, index) => {
+    if (phase.status === "done" && missingFields(index).length) {
+      phase.status = "in_progress";
+      phase.at = new Date().toISOString();
+    }
+  });
+}
+function renderThread() {
+  const person = currentParticipant(),
+    progress = completion(),
+    phases = journey().steps;
+  const name = person.name || "Mon parcours";
+  const initial = person.name
+    ? person.name.trim().charAt(0).toLocaleUpperCase("fr")
+    : "?";
+  $("#participant-name").textContent = name;
+  $("#participant-avatar").textContent = initial;
+  $("#open-participant").setAttribute(
+    "aria-label",
+    `Profil de ${name} · ${ROLE_LABELS[person.role]}`,
+  );
+  const overall =
+    progress.blocked >= 0
+      ? "blocked"
+      : progress.complete
+        ? "done"
+        : phases.some((p) => p.status !== "todo")
+          ? "in_progress"
+          : "todo";
+  const label = progress.complete
+    ? "Parcours renseigné"
+    : PHASE_STATES[overall].label;
+  const next = progress.complete ? 5 : progress.next;
+  const nextAction = progress.complete
+    ? "Votre décision est prête à être présentée. Exportez votre cahier avant de partir."
+    : progress.blocked >= 0
+      ? `Débloquez « ${STEP_LABELS[next]} » : ${phases[next].reason || "décrivez ce qui vous manque, puis sollicitez le facilitateur."}`
+      : PHASE_ACTIONS[next];
+  $("#participant-thread").innerHTML =
+    `<div class="thread-heading"><div class="thread-person"><span class="thread-avatar">${esc(initial)}</span><div><p class="eyebrow">LE FIL ROUGE DE ${esc(person.name ? person.name.toLocaleUpperCase("fr") : "VOTRE ATELIER")}</p><strong>${esc(UI[trackId].title)}</strong><span class="thread-role">${ROLE_LABELS[person.role]} · ${progress.done}/${progress.total} jalons déclarés terminés</span></div></div><div class="thread-heading-actions"><span class="phase-badge ${overall}">${icon(PHASE_STATES[overall].icon)}${label}</span><button class="quiet" data-edit-participant>${icon("users")} ${person.name ? "Mon profil" : "Me présenter"}</button></div></div><nav class="steps thread-map" id="steps" aria-label="Fil rouge : étapes et statuts personnels">${STEP_LABELS.map((title, index) => `<button class="step thread-node ${phases[index].status}" data-step="${index}" ${index === step ? 'aria-current="step"' : ""}><span class="n">${phases[index].status === "done" ? icon("check") : phases[index].status === "blocked" ? "!" : phases[index].status === "unavailable" ? "–" : String(index + 1).padStart(2, "0")}</span><span>${title}<span class="step-time">${PHASE_STATES[phases[index].status].label}</span></span></button>`).join("")}</nav><div class="thread-next"><div><span>${progress.complete ? "À EMPORTER" : "VOTRE PROCHAINE ACTION"}</span><p>${esc(nextAction)}</p></div><button class="primary" id="thread-resume">${progress.complete ? "Présenter ma décision" : progress.blocked >= 0 ? "Revoir mon blocage" : "Reprendre ici"}${icon("arrow")}</button></div><div class="thread-footnote"><span>${icon("info")}Statuts déclarés par vous, conservés ici. Aucune vérification Databricks ni notification automatique.</span><button class="quiet" data-thread-settings>${icon(bound() ? "check" : "settings")}${bound() ? "Liens renseignés" : "Liens Trial à renseigner"}</button></div>`;
+  $("#participant-dock").innerHTML =
+    `<span class="dock-avatar">${esc(initial)}</span><div><strong>${esc(name)} <span>· ${esc(STEP_LABELS[step])}</span></strong><span>${progress.done}/${progress.total} jalons déclarés · ${label}</span></div><button id="dock-resume">Mon fil rouge ${icon("arrow")}</button>`;
+  $("#dock-resume").onclick = () => {
+    $("#participant-thread").scrollIntoView({
+      behavior: reducedMotion() ? "auto" : "smooth",
+      block: "start",
+    });
+    $("#participant-thread").focus({ preventScroll: true });
+  };
+  $("#progress-label").textContent =
+    `${progress.done}/${progress.total} jalons déclarés`;
+  $("#progress-percent").textContent =
+    Math.round((progress.done / progress.total) * 100) + " %";
+  $("#progress-fill").style.width =
+    (progress.done / progress.total) * 100 + "%";
+  const bar = $("#progress-fill").parentElement;
+  bar.setAttribute("role", "progressbar");
+  bar.setAttribute("aria-label", "Jalons déclarés terminés");
+  bar.setAttribute("aria-valuemin", "0");
+  bar.setAttribute("aria-valuemax", String(progress.total));
+  bar.setAttribute("aria-valuenow", String(progress.done));
+  $("#participant-thread")
+    .querySelectorAll("[data-step]")
+    .forEach((el) => (el.onclick = () => go(Number(el.dataset.step))));
+  $("[data-edit-participant]").onclick = openParticipant;
+  $("[data-thread-settings]").onclick = openSettings;
+  $("#thread-resume").onclick = () => {
+    go(next);
+    if (progress.complete) {
+      if (notes().decision?.trim()) present();
+    } else if (progress.blocked >= 0) $("#phase-blocker").focus();
+  };
+}
+function checkpointPanel() {
+  const phase = journey().steps[step];
+  return `<section class="checkpoint-panel" aria-label="Mon statut pour cette étape"><div class="checkpoint-heading"><div><p class="eyebrow">MON POINT D’ÉTAPE</p><h3>Où en êtes-vous, ${esc(currentParticipant().name || "dans ce parcours")} ?</h3></div><label><span class="sr-only">Statut personnel de cette étape</span><select id="phase-status">${Object.entries(
+    PHASE_STATES,
+  )
+    .filter(([key]) => key !== "unavailable" || step === 3)
+    .map(
+      ([key, value]) =>
+        `<option value="${key}" ${phase.status === key ? "selected" : ""}>${value.label}</option>`,
+    )
+    .join(
+      "",
+    )}</select></label></div><p>Terminer une étape signifie que vous avez renseigné son livrable. Les résultats Databricks restent à vérifier dans votre environnement.</p><div id="blocker-area" ${phase.status === "blocked" ? "" : "hidden"}><label class="field"><span>Ce qui me bloque</span><textarea id="phase-blocker" maxlength="500" rows="2" placeholder="Ex. Je ne retrouve pas mon warehouse ou le résultat ne correspond pas à la référence.">${esc(phase.reason)}</textarea><span class="field-hint">Ce signal reste dans votre navigateur. Montrez-le au facilitateur ou partagez votre cahier pour demander de l’aide.</span></label></div><p id="checkpoint-feedback" role="status"></p><button id="complete-checkpoint" class="checkpoint-complete">${icon("check")} ${phase.status === "done" ? "Étape terminée · continuer" : step === 5 ? "Terminer mon parcours" : "Terminer cette étape et continuer"}</button>${step === 3 ? '<button class="quiet" id="builder-unavailable">Builder indisponible · poursuivre avec Genie</button>' : ""}</section>`;
+}
+function setPhaseStatus(value, advance = false) {
+  if (!(value in PHASE_STATES) || (value === "unavailable" && step !== 3))
+    return false;
+  saveFields();
+  if (value === "done") {
+    const missing = missingFields(step);
+    if (missing.length) {
+      const titles = missing.map(
+        (id) => W.workbook_fields.find((f) => f[0] === id)[1],
+      );
+      $("#checkpoint-feedback").textContent =
+        "Pour terminer, renseignez : " + titles.join(" ; ") + ".";
+      $("#checkpoint-feedback").classList.add("bad");
+      $("#phase-status").value = journey().steps[step].status;
+      const input = $(`[data-note="${missing[0]}"]`);
+      if (input) {
+        for (
+          let parent = input.parentElement;
+          parent;
+          parent = parent.parentElement
+        )
+          if (parent.tagName === "DETAILS") parent.open = true;
+        input.focus();
+      }
+      return false;
+    }
+  }
+  const phase = journey().steps[step];
+  phase.status = value;
+  phase.at = new Date().toISOString();
+  if (value !== "blocked") phase.reason = "";
+  $("#phase-status").value = value;
+  $("#blocker-area").hidden = value !== "blocked";
+  $("#checkpoint-feedback").classList.remove("bad");
+  $("#checkpoint-feedback").textContent =
+    value === "done"
+      ? "Jalon terminé selon votre déclaration. Votre fil rouge est enregistré."
+      : value === "unavailable"
+        ? "Builder est signalé indisponible. Continuez l’analyse Genie ; aucune génération d’application n’est validée."
+        : value === "blocked"
+          ? "Décrivez votre blocage ci-dessous. Le facilitateur n’est pas notifié automatiquement."
+          : "Votre statut personnel est enregistré.";
+  persist();
+  if (advance && step < 5) go(step + 1);
+  else if (value === "blocked") $("#phase-blocker").focus();
+  if (step === 5 && completion().complete)
+    status(
+      "Vos jalons sont renseignés. Présentez votre décision, puis exportez votre cahier.",
+    );
+  return true;
+}
+function bindCheckpoint() {
+  $("#phase-status").onchange = (event) => setPhaseStatus(event.target.value);
+  $("#complete-checkpoint").onclick = () => setPhaseStatus("done", true);
+  $("#phase-blocker").oninput = (event) => {
+    const phase = journey().steps[step];
+    phase.reason = event.target.value;
+    phase.at = new Date().toISOString();
+    persist();
+  };
+  if ($("#builder-unavailable"))
+    $("#builder-unavailable").onclick = () =>
+      setPhaseStatus("unavailable", true);
+}
+function fillParticipantForm() {
+  $("#participant-select").innerHTML = Object.values(memory.participants)
+    .map(
+      (person) =>
+        `<option value="${person.id}" ${person.id === memory.activeParticipant ? "selected" : ""}>${esc(person.name || "Mon parcours")}</option>`,
+    )
+    .join("");
+  $("#participant-edit-name").value = currentParticipant().name;
+  $("#participant-role").value = currentParticipant().role;
+  $("#participant-feedback").textContent = "";
+}
+function openParticipant() {
+  fillParticipantForm();
+  $("#participant-dialog").showModal();
+  $("#participant-edit-name").focus();
+}
+function switchParticipant(id) {
+  if (!Object.hasOwn(memory.participants, id)) return;
+  saveFields();
+  memory.activeParticipant = id;
+  const person = currentParticipant();
+  memory.bindings = { ...W.bindings, ...person.bindings };
+  trackId = W.tracks.some((t) => t.id === person.track)
+    ? person.track
+    : W.tracks[0].id;
+  step = Number.isInteger(person.step)
+    ? Math.max(0, Math.min(5, person.step))
+    : 0;
+  chartMetric = "primary";
+  $("#session-receipt").value = "";
+  $("#settings").open = false;
+  initBindings();
+  render();
+  persist();
+  fillParticipantForm();
+}
+function journeyMarkdown() {
+  return (
+    `## Mon fil rouge personnel\n\nParticipant : ${currentParticipant().name || "Non renseigné"}\nRôle : ${ROLE_LABELS[currentParticipant().role]}\nStatuts déclarés par le participant, sans vérification automatique.\n\n` +
+    STEP_LABELS.map((title, index) => {
+      const phase = journey().steps[index];
+      return `- ${title} : ${PHASE_STATES[phase.status].label}${phase.at ? " (" + phase.at + ")" : ""}${phase.reason ? " — " + phase.reason : ""}`;
+    }).join("\n") +
+    "\n\n"
+  );
+}
+
+let dockFrame = false;
+function updateDockVisibility() {
+  dockFrame = false;
+  const thread = $("#participant-thread").getBoundingClientRect(),
+    studio = $("#studio").getBoundingClientRect();
+  document.body.classList.toggle(
+    "show-thread-dock",
+    thread.bottom < 0 && studio.bottom > 80,
+  );
+}
+window.addEventListener(
+  "scroll",
+  () => {
+    if (!dockFrame) {
+      dockFrame = true;
+      requestAnimationFrame(updateDockVisibility);
+    }
+  },
+  { passive: true },
+);
+window.addEventListener("resize", updateDockVisibility);
+$("#open-participant").onclick = openParticipant;
+$("#participant-select").onchange = (event) =>
+  switchParticipant(event.target.value);
+$("#save-participant").onclick = () => {
+  saveFields();
+  currentParticipant().name = $("#participant-edit-name")
+    .value.trim()
+    .slice(0, 60);
+  currentParticipant().role = $("#participant-role").value;
+  persist();
+  render();
+  $("#participant-dialog").close();
+  status("Votre profil personnel est mis à jour.");
+};
+$("#create-participant").onclick = () => {
+  const name = $("#new-participant-name").value.trim();
+  if (!name) {
+    $("#participant-feedback").textContent =
+      "Donnez un prénom ou un nom au nouveau parcours.";
+    $("#new-participant-name").focus();
+    return;
+  }
+  const id = newParticipantId();
+  memory.participants[id] = {
+    id,
+    name: name.slice(0, 60),
+    role: "pair",
+    bindings: { ...W.bindings },
+    track: W.tracks[0].id,
+    step: 0,
+  };
+  switchParticipant(id);
+  $("#new-participant-name").value = "";
+  $("#participant-dialog").close();
+  status(
+    "Parcours de " + name + " créé. Ses notes, liens et statuts sont séparés.",
+  );
+};
 hydrateIcons();
 initBindings();
 render();
