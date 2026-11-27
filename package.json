@@ -1,7 +1,7 @@
 {
   "name": "aws-stationf-genie-workshop",
   "private": true,
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Development checks for the offline participant decision studio",
   "scripts": {
     "test:browser": "node scripts/browser-check.mjs",

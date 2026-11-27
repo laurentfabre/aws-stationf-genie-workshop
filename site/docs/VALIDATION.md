@@ -62,7 +62,7 @@ Les 33 tests Python vérifient les références SQL avec SQLite, les clés et jo
 
 Les 86 contrôles du nouveau studio complètent les régressions existantes. Les 48 contrôles Chrome headless portent sur les quatre parcours, les téléchargements, les prompts, les notes locales, exports/imports, l’affichage mobile et le PDF. Les 5 contrôles du ZIP réellement extrait couvrent son ouverture hors ligne, les liens, le guide Trial et le notebook importable. Une case du cahier participant n’exécute aucun test.
 
-L’archive contient **43 fichiers** contrôlés par SHA-256. Le notebook distribué ne contient aucune sortie enregistrée. Les sources et reçus internes restent hors du dépôt ; les bindings distribués sont vides. Python 3.11+ suffit aux tests locaux.
+L’archive contient **44 fichiers** contrôlés par SHA-256, dont le guide de déploiement AE/SA. Le notebook distribué ne contient aucune sortie enregistrée. Les sources et reçus internes restent hors du dépôt ; les bindings distribués sont vides. Python 3.11+ suffit aux tests locaux. `python3 scripts/check_publication.py --history` recherche les formats de credentials connus et les références d’environnement privées dans les fichiers publics, le ZIP et les blobs Git accessibles, sans afficher les valeurs détectées.
 
 ## Historique des corrections
 

@@ -10,6 +10,8 @@ Installez votre atelier dans un **Databricks Trial sur AWS**, puis travaillez en
 
 Les téléchargements sont publics, sans compte GitHub. Extrayez le ZIP, ouvrez `index.html` pour les consignes et importez `notebooks/00_START_HERE.ipynb` dans **votre propre Trial**. Les données, requêtes, parcours et fichiers nécessaires sont inclus ; aucun accès à l’environnement du facilitateur n’est requis.
 
+**AEs and SAs:** use the [deployment README](docs/DEPLOYMENT.md) to prepare a session, install the dataset and Genie Agent, validate participant access and reuse the kit. Deployment requires no copied credentials.
+
 ## Votre studio des décisions
 
 La version **v1.1.0** propose quatre missions visuelles, un parcours guidé en six étapes et un cahier personnel. Copiez vos questions vers Genie, examinez les références dans des graphiques interactifs, puis présentez votre recommandation en plein écran avec vos propres preuves et votre prochaine action. Les détails SQL et les prompts complets restent disponibles à la demande.

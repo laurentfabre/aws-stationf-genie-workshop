@@ -14,5 +14,12 @@ evidence/
 receipts/
 *.pem
 *.key
+*.p12
+*.pfx
+.aws/
+.ssh/
+credentials
+credentials.json
+service-account*.json
 *.log
 dist/

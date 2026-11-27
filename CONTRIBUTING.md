@@ -5,6 +5,7 @@ Le contenu public est autonome. Modifiez `workshop.json`, `sql/`, `data/`, `src/
 ```bash
 python3 scripts/build_notebook.py
 python3 scripts/build_site.py
+python3 scripts/check_publication.py --history
 python3 -m unittest discover -s tests -v
 ```
 

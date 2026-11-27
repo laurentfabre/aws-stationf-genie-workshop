@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SITE = ROOT / 'site'
 TRACKS = ('marketing', 'activation', 'retention', 'sales')
 TABLES = ('account_snapshot', 'campaign_weekly', 'opportunities')
-DOCS = ('TRIAL_SETUP', 'APP_BUILDER', 'TROUBLESHOOTING', 'CLEANUP', 'FACILITATION', 'VALIDATION')
+DOCS = ('TRIAL_SETUP', 'APP_BUILDER', 'TROUBLESHOOTING', 'CLEANUP', 'FACILITATION', 'VALIDATION', 'DEPLOYMENT')
 FILES = [
     'index.html', 'trial.html', 'guide.html', 'guide.pdf', 'pdf-input.sha256',
     'README.md', 'DATA_CONTRACT.md', 'BRAND_SOURCES.md',

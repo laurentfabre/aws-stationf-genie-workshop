@@ -7,6 +7,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -16,6 +18,8 @@ jobs:
           python3 scripts/build_site.py
       - name: Verify data, installer and distribution
         run: python3 -m unittest discover -s tests -v
+      - name: Check public files, archives and Git history
+        run: python3 scripts/check_publication.py --history
       - name: Check generated text is current
         run: git diff --exit-code -- notebooks/ data/bundle.json site/ ':!site/data/workshop.sqlite'
   browser-experience:
